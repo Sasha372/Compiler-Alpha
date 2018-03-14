@@ -54,11 +54,6 @@ namespace Compiler {
 	}
 }
 
-//int Compiler::GetCountWord(){return Global.body.size();}
-//int Compiler::GetWordType(int id) { return Global.body[id].type; }
-//string Compiler::GetWordName(int id){return Global.body[id].name;}
-//string Compiler::GetWordArg(int id, int arg_id){return Global.body[id].arg[arg_id].str;}
-
 void Compiler::processCode(string & str, vector<string> & out)
 {
 	//cout << str << endl;

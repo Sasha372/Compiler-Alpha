@@ -25,11 +25,6 @@ namespace Compiler {
 	extern struct word;
 	extern word Global;
 
-	/*int GetCountWord();
-	int GetWordType(int);
-	string GetWordName(int);
-	string GetWordArg(int, int);*/
-
 	//================================//
 
 	void processCode(string & str, vector<string> & out); //Входная функция компилятора
