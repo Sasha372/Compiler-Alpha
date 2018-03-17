@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "Compiler.h"
-#include "Random.h"
 using namespace std;
 
 namespace Compiler {
@@ -18,43 +17,10 @@ namespace Compiler {
 	vector<word> listVarGlob;
 	vector<word> listVarLocal;
 
-	string chrRG = {"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}; //54 символа
-	string CharRand() {
-		string st;
-		int ti = chrRG.size() - 1;
-		for (int i = 0; i < 10; i++) 
-			st += chrRG[random(0, ti)];
-		return st;
-	}
 	string currFunc;
-
-	//Вернет false если символ есть в строке
-	bool isChrBeStr(char str, string chr) { 
-		int strS = 1;// str.size();
-		int chrS = chr.size();
-
-		for (int i = 0; i < strS; i++) {
-			for (int j = 0; j < chrS; j++)
-				if (str == chr[j])return false;
-		}
-		return true;
-	}
-
-	void split(string line, char split, vector<string> & part) {
-		string buffer = ""; //буфферная строка
-		for (int i = 0; i < line.size(); i++) {
-			if (line[i] != split) 
-				buffer += line[i];
-			else {
-				part.push_back(buffer);
-				buffer = "";
-			}
-		}
-		part.push_back(buffer);
-	}
 }
 
-void Compiler::processCode(string & str, vector<string> & out)
+void Compiler::processCode(Code & TextCode)
 {
 	//cout << str << endl;
 	word wrd;
@@ -64,188 +30,30 @@ void Compiler::processCode(string & str, vector<string> & out)
 
 	//==============================//
 
-	processBlock(str, Global, Glob); //Запуск обработки кода и запись слов п вектор listWord
-	glueCode(Global, out);
+	processBlock(TextCode, Global, Glob); //Запуск обработки кода и запись слов п вектор listWord
+	//glueCode(Global, out);
 }
-void Compiler::processBlock(string & istr, word & vct, int parent)
+void Compiler::processBlock(Code & TextCode, word & vct, int parent)
 {
-	searchWord(istr, vct, parent); //Вызов поиска слов в строке istr  запись их в вектор vct
-	unpackBlock(vct); //Обработка слов и запись их в вектор vct
+	searchWord(TextCode, vct, parent); //Вызов поиска слов в строке istr  запись их в вектор vct
+	//unpackBlock(vct); //Обработка слов и запись их в вектор vct
 }
 
-bool Compiler::searchWord(string & istr, word & vct, int parent)
+bool Compiler::searchWord(Code & TextCode, word & vct, int parent)
 {
-	int id = 0;
-	string tmp_wrd; //Временный переменная со словом
-	while (!(istr[id] == 0)) {
-		if (isChrBeStr(istr[id], " []{}()<>;\\/''\"=+-*&|")) {
-			//cout << "IStr: " << istr[id] << endl;
-			tmp_wrd += istr[id];
-		}
-		else tmp_wrd = ""; //Если встретился пробел то очищаем временную переменную
-		
-		if ((isChrBeStr(istr[id + 1], chrRG)) && (tmp_wrd.size() != 0)) {
-			//cout << "%" << tmp_wrd.size() << endl;
-			/*int type_wrd = User;
-				 if (tmp_wrd == "var")type_wrd = Var; 
-			else if (tmp_wrd == "func")type_wrd = Func;
-			else if (tmp_wrd == "return")type_wrd = Ret;
-			else if (tmp_wrd == "while")type_wrd = While;
-			else if (tmp_wrd == "for")type_wrd = For;
-			else if (tmp_wrd == "if")type_wrd = If;
-
-			switch (type_wrd)
-			{
-			case Var:
-				switch (parent)
-				{
-				case Glob: //Области в которых разрешено создание переменных
-				case Func:
-				case Func_arg:
-				case For:
-				case For_arg:
-				case While:
-				case If:
-					if (!readWordVar(istr, id, vct)) { //Чтение объявления переменной
-						cout << "incorrect variable declaration." << endl; //Если чтение не удолось вывод ошибки
-						return false; //Прерывание компиляции
-					}
-					break;
-				default:
-					cout << "Variable outside " << endl; //Переменная объявлена за пределами допустимого
-					return false;
-				}
-			case Func:
-				switch (parent)
-				{
-				case Glob:
-					//Чтение объявления функции
-					if(!readWordFunc(istr, id, vct)) {
-						cout << "incorrect function declaration" << endl;
-						return false;
-					}
-					break;
-				default:
-					cout << "function outside declaration" << endl;
-					return false;
-				}
-			case Ret:
-				switch (parent)
-				{
-				case Func:
-				case Func_arg:
-				case For:
-				case For_arg:
-				case While:
-				case If:
-					if (!readWordReturn(istr, id, vct)) {
-						cout << "" << endl;
-						return false;
-					}
-				default:
-					cout << "function outside declaration" << endl;
-					return 
-				}
-			case While:
-				switch (parent)
-				{
-				case Func:
-				case While:
-				case For:
-				case If:
-					if (!readWordWhile(istr, id, vct)) {
-						cout << "" << endl;
-						return false;
-					}
-				default:
-					cout << "" << endl;
-					return false;
-				}
-			case If:
-				switch (parent)
-				{
-				case Func:
-				case While:
-				case For:
-				case If:
-					if (!readWordIf(istr, id, vct)) {
-						cout << "" << endl;
-						return false;
-					}
-				default:
-					cout << "" << endl;
-					return false;
-				}
-			case User:
-				switch (parent)
-				{
-				case Func:
-				case While:
-				case For:
-				case If:
-					if (!EquallyVar(tmp_wrd, istr, id, vct)) 
-						if (!CallFunc(tmp_wrd, istr, id, vct)) {
-							cout << "" << endl;
-							return false;
-						}
-					break;
-				default:
-					cout << "" << endl;
-					return false;
-				}
-				
-			}*/
-			//cout << tmp_wrd << endl;
-			switch (parent) {
-			case Glob: 
-				if (tmp_wrd == "var") readWordVar(istr, id, vct); //Чтение объявления переменной
-				else if (tmp_wrd == "func") readWordFunc(istr, id, vct); //Чтение объявления функции
-				else if (tmp_wrd == "DLL") readWordDLL(istr, id, vct);
-				else if (CallFunc(tmp_wrd, istr, id, vct)) {}
-				else { cout << "1 Unknow identifier: " << tmp_wrd << endl; tmp_wrd = ""; return false; }
-				break;
-			case If: 
-				if (tmp_wrd == "var") readWordVar(istr, id, vct); //Если слово
-				else if (tmp_wrd == "while") readWordWhile(istr, id, vct);
-				else if (tmp_wrd == "return") readWordReturn(istr, id, vct); 
-				else if (tmp_wrd == "if") readWordIf(istr, id, vct);
-				else if (EquallyVar(tmp_wrd, istr, id, vct)) {}
-				else if (CallFunc(tmp_wrd, istr, id, vct)) {}
-				else { cout << "4 Unknow identifier: " << tmp_wrd << endl; return false; }
-				break;
-			case While:
-				if (tmp_wrd == "var") { readWordVar(istr, id, vct); tmp_wrd = ""; } //Если слово
-				else if (tmp_wrd == "while") { readWordWhile(istr, id, vct); tmp_wrd = ""; }
-				else if (tmp_wrd == "return") { readWordReturn(istr, id, vct); tmp_wrd = ""; }
-				else if (tmp_wrd == "if") { readWordIf(istr, id, vct); tmp_wrd = ""; }
-				else if (EquallyVar(tmp_wrd, istr, id, vct)) { tmp_wrd = ""; }
-				else if (CallFunc(tmp_wrd, istr, id, vct)) {}
-				else { cout << "5 Unknow identifier: " << tmp_wrd << endl; tmp_wrd = ""; return false; }
-				break;
-			case Func:
-				if (tmp_wrd == "var") { readWordVar(istr, id, vct); tmp_wrd = ""; } //Если слово 
-				else if (tmp_wrd == "while") { readWordWhile(istr, id, vct); tmp_wrd = ""; }
-				else if (tmp_wrd == "return") { readWordReturn(istr, id, vct); tmp_wrd = ""; }
-				else if (tmp_wrd == "if") { readWordIf(istr, id, vct); tmp_wrd = ""; }
-				else if (EquallyVar(tmp_wrd, istr, id, vct)) {}
-				else if (CallFunc(tmp_wrd, istr, id, vct)) {}
-				else { cout << "2 Unknow identifier: " << tmp_wrd << endl; tmp_wrd = ""; return false; }
-				break;
-			case If_arg:
-			case Whl_arg:break;
-			case Func_arg: 
-				if (tmp_wrd == "var") { readWordVar(istr, id, vct); tmp_wrd = ""; } //Если слово 
-				else { cout << "3 Unknow identifier: " << tmp_wrd << endl; tmp_wrd = ""; return false; }
-				break;
-			case Func_cl:
-			case Func_API:
-				break;
-			//default:
-				//break;
-			}
-		}
-		id++;
+	for (int i = 0; i < 10; i++) {
+		string t = TextCode.nextWord();
+		cout << t << endl;
 	}
+	/*if (tmp_wrd == "var") { readWordVar(istr, id, vct); tmp_wrd = ""; } //Если слово 
+	else if (tmp_wrd == "while") { readWordWhile(istr, id, vct); tmp_wrd = ""; }
+	else if (tmp_wrd == "return") { readWordReturn(istr, id, vct); tmp_wrd = ""; }
+	else if (tmp_wrd == "if") { readWordIf(istr, id, vct); tmp_wrd = ""; }
+	else if (EquallyVar(tmp_wrd, istr, id, vct)) {}
+	else if (CallFunc(tmp_wrd, istr, id, vct)) {}
+	else { cout << "2 Unknow identifier: " << tmp_wrd << endl; tmp_wrd = ""; return false; }*/
+	return false;
+		
 }
 bool Compiler::readWordVar(string & istr, int & id, word & vct)
 {
@@ -264,7 +72,7 @@ bool Compiler::readWordVar(string & istr, int & id, word & vct)
 	}
 	
 	vector<string> tmp_str_var; //Вектор с строками переменных через запятую
-	split(str_var, ',', tmp_str_var); //Разбиение целой строки на части
+	str::split(str_var, ',', tmp_str_var); //Разбиение целой строки на части
 
 	for (int i = 0; i < tmp_str_var.size(); i++) {
 		word tmp; //Временной слово
@@ -273,7 +81,7 @@ bool Compiler::readWordVar(string & istr, int & id, word & vct)
 		tmp.str = tmp_str_var[i]; //Кеширование
 		tmp.type = Var; //Запись типа слова
 
-		split(str_var, '=', str); //Извлечение имени переменной и её значения
+		str::split(str_var, '=', str); //Извлечение имени переменной и её значения
 
 		tmp.name = str[0]; //Присваивание имени переменной
 		if (currFunc != "") { //Если находимся в туле функции
@@ -339,7 +147,7 @@ bool Compiler::readWordFunc(string & istr, int & id, word & vct)
 	}
 	
 	word adr_call;
-	adr_call.str = CharRand();
+	adr_call.str = str::CharRand();
 
 	word usr;
 	usr.type = Func_cl;
@@ -556,7 +364,7 @@ bool Compiler::EquallyVar(string name, string & istr, int & id, word & vct)
 	}
 
 	vector<string> tmp_str; //Вектор с строками переменных через запятую
-	split(str_var, '=', tmp_str); //Разбиение челой строки на части
+	str::split(str_var, '=', tmp_str); //Разбиение челой строки на части
 
 	if (tmp_str.size() > 1) {
 		word tmp; //Временной слово
@@ -572,7 +380,7 @@ bool Compiler::EquallyVar(string name, string & istr, int & id, word & vct)
 		if (tmp_str.size() == 2) { //Если есть 2я часть
 			int r = tmp_str[0].size(); //Размер строки перед ровно
 			if (r > 0) { //Если перед ровно что-то есть
-				if(!isChrBeStr(tmp_str[0][0], "+-*/")) //Если перед ровно стоит  + - * /
+				if(!str::isChrBeStr(tmp_str[0][0], "+-*/")) //Если перед ровно стоит  + - * /
 					arg.str = name + tmp_str[0][r - 1] + tmp_str[1]; //Запись в аргумент
 				else cout << "Unexpected sumbol" << endl; //Если что-то другое ошибка
 			}
@@ -629,7 +437,7 @@ bool Compiler::CallFunc(string name, string & istr, int & id, word & vct)
 //Нахождение в слове других слов
 void Compiler::unpackBlock(word & vct)
 {	
-	//cout << "uB: " << vct.body.size() << endl;
+	/*cout << "uB: " << vct.body.size() << endl;
 	for (int i = 0; i < vct.body.size(); i++) {
 		int type = vct.body[i].type;
 		switch (type) {
@@ -650,17 +458,14 @@ void Compiler::unpackBlock(word & vct)
 			break;
 		default:break;
 		}
-	}
+	}*/
 }
 void Compiler::glueCode(word vct, vector<string>& str)
 {
 	for (int i = 0; i < vct.body.size();i++) {
 		string tmp;
 		if (vct.body[i].type == Var) {
-			//Если родительский класс установлен(не "none")
-			//if (!(par == "none"))tmp += par + "."; //Добавление к имени переменной имени класса
 			tmp += vct.body[i].name + "=" + vct.body[i].arg[0].str; //Создание переменной с её значением
-			//cout << tmp << endl;
 			str.push_back(tmp); //Добавление в вектор
 		}
 		if (vct.body[i].type == Func) {
@@ -717,8 +522,8 @@ void Compiler::glueCode(word vct, vector<string>& str)
 		}
 		if (vct.body[i].type == While) {
 			//cout << "===================" << endl;
-			string Whl_end = CharRand(); //Указатель линкера на конец цикла. Создание ранодомного набора символов
-			string Whl_bgn = CharRand(); //Указатель линкера на начало цикла. Создание ранодомного набора символов
+			string Whl_end = str::CharRand(); //Указатель линкера на конец цикла. Создание ранодомного набора символов
+			string Whl_bgn = str::CharRand(); //Указатель линкера на начало цикла. Создание ранодомного набора символов
 
 			tmp = "$" + Whl_bgn + "$ "; //Установка метки начала цикла
 			str.push_back(tmp); //Добавление в вектор
@@ -740,8 +545,8 @@ void Compiler::glueCode(word vct, vector<string>& str)
 			str.push_back(tmp); //Добавление в вектор
 		}
 		if (vct.body[i].type == If) {
-			string if_end = CharRand(); //Указатель линкера на конец тела условия. Создание ранодомного набора символов
-			string else_end = CharRand(); //Указатель линкера на конец else условия. Создание ранодомного набора символов
+			string if_end = str::CharRand(); //Указатель линкера на конец тела условия. Создание ранодомного набора символов
+			string else_end = str::CharRand(); //Указатель линкера на конец else условия. Создание ранодомного набора символов
 
 			// Условие при котором код будет выполняться и кокой код исполять
 			tmp = "if " + vct.body[i].arg[0].str + " then else jmp(@" + if_end + "@) end";

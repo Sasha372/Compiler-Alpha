@@ -4,7 +4,7 @@
 using namespace std;
 
 namespace PreCPU {
-
+	typedef vector<string> code;
 	extern vector<string> listDef_from;
 	extern vector<string> listDef_to;
 	extern int countDef;
@@ -17,15 +17,15 @@ namespace PreCPU {
 
 	string direct[];
 
-	void processCode(string & istr, string & ostr);
+	void processCode(string & istr, code & ostr);
 
-	string StrComment(string & ist);
+	string delStrComment(string & ist);
 	void SpaceCut(string & istr, string & ostr); //Удаляет лишние пробелы
-	void BlkComment(string & str, string & woCom); //Удаляет блочные коммментарии
-	void directPreCPU(string & istr, string & ostr); //Чтение и удаление директив препроцессора
+	void delBlkComment(code & str, code & woCom); //Удаляет блочные коммментарии
+	void directPreCPU(code & istr, code & ostr); //Чтение и удаление директив препроцессора
 
-	void direct_def(string & str, int & id, int & dir_id); //Обработка директивы "def"
-	void direct_req(string & str, int & id, int & dir_id, string & ostr); //Обработка директивы "req"
+	void direct_def(code & str, int & id, int & dir_id); //Обработка директивы "def"
+	void direct_req(code & str, int & id, int & dir_id, code & ostr); //Обработка директивы "req"
 }
 
 #endif // PRECPU_H

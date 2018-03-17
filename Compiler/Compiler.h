@@ -27,10 +27,10 @@ namespace Compiler {
 
 	//================================//
 
-	void processCode(string & str, vector<string> & out); //Входная функция компилятора
-	void processBlock(string & istr, word & vct, int parent); //Обработка блока кода
+	void processCode(Code & TextCode); //Входная функция компилятора
+	void processBlock(Code & TextCode, word & vct, int parent); //Обработка блока кода
 
-	bool searchWord(string & istr, word & vct, int parent); //Посик слов в блоке кода
+	bool searchWord(Code & TextCode, word & vct, int parent); //Посик слов в блоке кода
 	bool readWordVar(string & istr, int & id, word & vct); //Чтение слова var
 	bool readWordFunc(string & istr, int & id, word & vct); //Чтение слова func
 	bool readWordWhile(string & istr, int & id, word & vct); //Чтение слова while

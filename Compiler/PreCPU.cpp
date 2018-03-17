@@ -1,4 +1,4 @@
-#include "stdafx.h"
+п»ї#include "stdafx.h"
 #include "fstream"
 #include "PreCPU.h"
 using namespace std;
@@ -6,13 +6,6 @@ using namespace std;
 vector<string> PreCPU::listDef_from;
 vector<string> PreCPU::listDef_to;
 int PreCPU::countDef;
-
-//vector<string> PreCPU::listReq; //Лист с require
-//vector<int> PreCPU::listReqPos; //лист позиций require
-
-namespace PreCPU {
-	//string *outStr;
-}
 
 string PreCPU::direct[] = { "req", "def" };
 int countDir = 2;
@@ -23,49 +16,46 @@ void PreCPU::GetListDef(int id, string & from, string & to) {
 	to = listDef_to[id];
 }
 
-//int PreCPU::GetCountReq() { return listReq.size(); }
-//int PreCPU::GetCountReqPos() { return listReqPos.size(); }
-
-void PreCPU::processCode(string & inputFile, string & ostr)
+void PreCPU::processCode(string & inputFile, code & ostr)
 {
-	string codeIn;
-	string woCom;
-	string woSpace;
-	string woDirect;
+	code codeIn;
+	code woCom;
 
-	ifstream input(inputFile);
-	string in;
-	while (getline(input, in))//Получение строки файла
-	{
-		if (in != "") {
-			codeIn += PreCPU::StrComment(in) + " ";//удаление строчных комментариев
-		}
-	}
-	input.close(); //Безопасное закрытие файла
+	//ifstream input(inputFile);
+	//string in;
+	//while (getline(input, in))//РџРѕР»СѓС‡РµРЅРёРµ СЃС‚СЂРѕРєРё С„Р°Р№Р»Р°
+	//{
+	//	if (in != "") {
+	//		string s = PreCPU::delStrComment(in); //СѓРґР°Р»РµРЅРёРµ СЃС‚СЂРѕС‡РЅС‹С… РєРѕРјРјРµРЅС‚Р°СЂРёРµРІ
+	//		if (!str::onlySpace(s)) {
+	//			codeIn.push_back(s);
+	//			cout << s << endl;
+	//		}
+	//	}
+	//}
+	//input.close(); //Р‘РµР·РѕРїР°СЃРЅРѕРµ Р·Р°РєСЂС‹С‚РёРµ С„Р°Р№Р»Р°
+	cout << "===============================================" << endl;
 
-	PreCPU::SpaceCut(codeIn, woSpace); //Удаление дублирующихся пробелов
-	//cout << woSpace << endl;
+	PreCPU::delBlkComment(codeIn, woCom); //РЈРґР°Р»РµРЅРёРµ Р±Р»РѕС‡РЅС‹С… РєРѕРјРјРµРЅС‚Р°СЂРёРµРІ
+	for (int i = 0; i < woCom.size(); i++)
+		cout << woCom[i] << endl;
 	//cout << "===============================================" << endl;
 
-	PreCPU::BlkComment(woSpace, woCom); //Удаление блочных комментариев
-	//cout << woCom << endl;
-	//cout << "===============================================" << endl;
-
-	PreCPU::directPreCPU(woCom, ostr); //Чтение и удаление директив препроцессора
+	PreCPU::directPreCPU(woCom, ostr); //Р§С‚РµРЅРёРµ Рё СѓРґР°Р»РµРЅРёРµ РґРёСЂРµРєС‚РёРІ РїСЂРµРїСЂРѕС†РµСЃСЃРѕСЂР°
 	//cout << ostr << endl;
 	//cout << "===============================================" << endl;
 }
-string PreCPU::StrComment(string & str)
+string PreCPU::delStrComment(string & str)
 {
-	string out = "";
-	int id = 0;
-	while (!(str[id] == 0))
-	{
-		//if (str[id] == ' ' && str[id + 1] == ' ')id++;  //if (str[id] == '\0' && str[id + 1] == '\0')
-		if (str[id] == '/' && str[id + 1] == '/')break; else out += str[id]; // Если найден строчной коментарий то завершение цикла
-		id++;
-	}
-	return out;
+	int posComment = str.find("//");
+	//cout << posComment << " in string: " << str << endl;
+	if (posComment <= str.size()) {
+		string woComment;
+		for (int i = 0; i < posComment; i++) {
+			woComment += str[i];
+		}
+		return woComment;
+	}else return str;
 }
 void PreCPU::SpaceCut(string & istr, string & ostr)
 {
@@ -77,47 +67,80 @@ void PreCPU::SpaceCut(string & istr, string & ostr)
 		id++;
 	}
 }
-void PreCPU::BlkComment(string & str, string & woCom)
+void PreCPU::delBlkComment(code & str, code & woCom)
 {
-	int id = 0;
-	while (!(str[id] == 0))//Пока строка не кончится
-	{
-		if ((str[id] == '/') && (str[id + 1] == '*')) { //Если встретился открывающий коментарий
-			int j = id + 2;
-			while (!(str[j] == 0))//Пока строка не кончится
-			{
-				if ((str[j] == '*') && (str[j + 1] == '/')) { id = j + 2; break; }//Если встретился закрывающий коментарий
-				j++;
+	string tmp;
+	bool inComment = false;
+	bool inQuotes = false;
+	for (int i = 0; i < str.size(); i++) {
+		for (int j = 0; j < str[i].size(); j++) {
+			if ((str[i][j] == '\'') || (str[i][j] == '"')) {
+				inQuotes = !inQuotes;
+				if(!inComment){ tmp += str[i][j]; }
+			}
+			else 
+				if (!inQuotes) {
+					if (inComment) {
+						if ((str[i][j] == '*') && (str[i][j + 1] == '/')) {
+							inComment = false;
+							j++;
+						}
+					}
+					else {
+						if ((str[i][j] == '/') || (str[i][j + 1] == '*')) { inComment = true; j++; }
+						else tmp += str[i][j];
+					}
+				}else if (!inComment)tmp += str[i][j];
+		}
+		if ((!inComment) && (tmp != "")) {
+			woCom.push_back(tmp);
+			tmp = "";
+		}
+	}
+	/*bool inComment = false;
+	for (int i = 0; i < str.size(); i++) {
+		if (inComment) {
+			size_t found = str[i].find("* /");
+			if (found != string::npos) {
+				inComment = false;
 			}
 		}
 		else {
-			if (((str[id] == '*') && (str[id + 1] == '/')))id++; else woCom += str[id];//Закрывающий коментарий, который не имеет пары
-		}		//|| ((str[id] == ' ') && (str[id + 1] == '/n'))
-		id++;
-	}
-	str = "";
+			size_t found = str[i].find("/*");
+			if (found != string::npos) {
+				if (str[i][found - 1] != '\\') {
+					woCom.push_back(str[i].substr(0, found));
+					inComment = true;
+				}
+			}
+			else {
+				woCom.push_back(str[i]);
+			}
+		}
+	}*/
 }
 
-void PreCPU::directPreCPU(string & istr, string & ostr)
+void PreCPU::directPreCPU(code & istr, code & ostr)
 {
-	int id = 0;
+
+	/*int id = 0;
 	bool isDirect;
 	int dire;
-	while (!(istr[id] == 0)) //Пока не кончится сторка
+	while (!(istr[id] == 0)) //РџРѕРєР° РЅРµ РєРѕРЅС‡РёС‚СЃСЏ СЃС‚РѕСЂРєР°
 	{
-		if (istr[id] == '#') { //Если есть указатель на директиву
-			for (int i = 0; i < countDir; i++) { //Цикл для проверки соответсвия одной из всех директив
-				int j = 0; //Сдвиг по директиве
+		if (istr[id] == '#') { //Р•СЃР»Рё РµСЃС‚СЊ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РґРёСЂРµРєС‚РёРІСѓ
+			for (int i = 0; i < countDir; i++) { //Р¦РёРєР» РґР»СЏ РїСЂРѕРІРµСЂРєРё СЃРѕРѕС‚РІРµС‚СЃРІРёСЏ РѕРґРЅРѕР№ РёР· РІСЃРµС… РґРёСЂРµРєС‚РёРІ
+				int j = 0; //РЎРґРІРёРі РїРѕ РґРёСЂРµРєС‚РёРІРµ
 				string d = direct[i];
 				while (!(d[j] == 0 && istr[id + j + 1] == ' '))
 				{
-					//Если буква не сооттсвует переход к следуйщей директиве
-					//Если совпадает продолжаем сравнение
+					//Р•СЃР»Рё Р±СѓРєРІР° РЅРµ СЃРѕРѕС‚С‚СЃРІСѓРµС‚ РїРµСЂРµС…РѕРґ Рє СЃР»РµРґСѓР№С‰РµР№ РґРёСЂРµРєС‚РёРІРµ
+					//Р•СЃР»Рё СЃРѕРІРїР°РґР°РµС‚ РїСЂРѕРґРѕР»Р¶Р°РµРј СЃСЂР°РІРЅРµРЅРёРµ
 					if (istr[id + j + 1] == d[j])isDirect = true; else { isDirect = false; break; }
 					j++;
 				}
-				//Если все буквы совпали то директива определена
-				//Если последняя не совпала то проверяем есть ли ещё директивы. Если нет то выдаём ошибку, если есть то продолжаем
+				//Р•СЃР»Рё РІСЃРµ Р±СѓРєРІС‹ СЃРѕРІРїР°Р»Рё С‚Рѕ РґРёСЂРµРєС‚РёРІР° РѕРїСЂРµРґРµР»РµРЅР°
+				//Р•СЃР»Рё РїРѕСЃР»РµРґРЅСЏСЏ РЅРµ СЃРѕРІРїР°Р»Р° С‚Рѕ РїСЂРѕРІРµСЂСЏРµРј РµСЃС‚СЊ Р»Рё РµС‰С‘ РґРёСЂРµРєС‚РёРІС‹. Р•СЃР»Рё РЅРµС‚ С‚Рѕ РІС‹РґР°С‘Рј РѕС€РёР±РєСѓ, РµСЃР»Рё РµСЃС‚СЊ С‚Рѕ РїСЂРѕРґРѕР»Р¶Р°РµРј
 				if (isDirect) { dire = i; id += 3; break; }
 				else if (i == countDir - 1) cout << "Error in directive preprocessor's" << endl;
 			}
@@ -137,11 +160,11 @@ void PreCPU::directPreCPU(string & istr, string & ostr)
 		else ostr += istr[id];
 		id++;
 	}
-	istr = "";
+	istr = "";*/
 }
-void PreCPU::direct_def(string & str, int & id, int & dir_id)
+void PreCPU::direct_def(code & str, int & id, int & dir_id)
 {
-	string tmp;
+/*	string tmp;
 	while (!(str[id + dir_id] == ' ')) {
 		tmp += str[id + dir_id];
 		dir_id++;
@@ -153,16 +176,16 @@ void PreCPU::direct_def(string & str, int & id, int & dir_id)
 		tmp += str[id + dir_id];
 		dir_id++;
 	}
-	listDef_to.push_back(tmp);
+	listDef_to.push_back(tmp);*/
 }
-void PreCPU::direct_req(string & str, int & id, int & dir_id, string & ostr)
+void PreCPU::direct_req(code & str, int & id, int & dir_id, code & ostr)
 {
-	string arg;
+	/*string arg;
 	while (!(str[id + dir_id] == ' ')) {
 		arg += str[id + dir_id];
 		dir_id++;
 	}
 	string outPr;
 	processCode(arg, outPr);
-	ostr += outPr;
+	ostr += outPr;*/
 }
