@@ -21,8 +21,10 @@ public:
 private:
 	string filename;
 	code start;
-	bool isInit;
+	bool isInit = false;
 	int line, symbol;
+	bool returnWord(string word, int i, int j);
+	int sizeWoCom(string str);
 };
 
 #endif // !STR_H

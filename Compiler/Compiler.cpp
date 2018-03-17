@@ -22,7 +22,7 @@ namespace Compiler {
 
 void Compiler::processCode(Code & TextCode)
 {
-	//cout << str << endl;
+	cout << "Processing..." << endl;
 	word wrd;
 	wrd.type = Func_API;
 	wrd.name = "status";

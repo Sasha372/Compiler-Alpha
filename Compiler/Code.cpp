@@ -13,7 +13,7 @@ Code::Code(string file)
 		while (getline(input, in))
 		{
 			start.push_back(in);
-			cout << in << endl;
+			//cout << in << endl;
 		}
 		input.close();
 		line = 0;
@@ -27,28 +27,33 @@ string Code::nextWord()
 	string word;
 	for (int i = line; i < start.size(); i++) {
 		bool inQuotes = false;
-		for (int j = symbol; j < start[i].size(); j++) {
+		int size = sizeWoCom(start[i]);
+		for (int j = symbol; j < size; j++) {
+			char crChar = start[i][j];
 			if (!inQuotes) {
-				if (!str::isChrBeStr(start[i][j], "	 \n\r")) {
-					if (str::isChrBeStr(start[i][j], str::letters + str::digits)) {
-						word += start[i][j];
-					}
-					else if (!word.empty()) {
-						line = i;
-						symbol = j;
-						return word;
-					}
+				if ((crChar == '"') || (crChar == '\'')) {
+					if (returnWord(word, i, j)) return word;
+					word += crChar;
+					inQuotes = true;
 				}
-				else if (!word.empty()) {
-					line = i;
-					symbol = j;
+				else if (str::isChrBeStr(crChar, str::letters + str::digits)) 
+					word += crChar;
+				else if (returnWord(word, i, j)) return word;
+			}
+			else {
+				if ((crChar == '"') || (crChar == '\'')) {
+					returnWord(word, i , j + 1);
+					return word + crChar;
+				}
+				else if (!str::isChrBeStr(crChar, "\n\r"))
+					word += crChar;
+				else if (returnWord(word, i, j)) {
+					//TODO: Ошибка не закрытой кавычки
 					return word;
 				}
 			}
-			else {
-
-			}
 		}
+		symbol = 0;
 	}
 }
 
@@ -56,6 +61,23 @@ void Code::print()
 {
 	//for (int i = 0; i < body[7].size(); i++)
 		//cout << i << " : " << body[7][i] << endl;
+}
+
+bool Code::returnWord(string word, int i, int j)
+{
+	if (!word.empty()) {
+		line = i;
+		symbol = j;
+		return true;
+	}
+	return false;
+}
+
+int Code::sizeWoCom(string str)
+{
+	int size = str.size();
+	if (str.find("/*") != string::npos) size = (int)str.find("/*");
+	if (str.find("//") != string::npos) size = (int)str.find("//");
 }
 
 string str::letters = { "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" }; //54 символа
@@ -80,16 +102,16 @@ string str::CharRand() {
 	return st;
 }
 
-//Вернет false если символ есть в строке
+//Вернет true если символ есть в строке
 bool str::isChrBeStr(char str, string chr) {
 	int strS = 1;// str.size();
 	int chrS = chr.size();
 
 	for (int i = 0; i < strS; i++) {
 		for (int j = 0; j < chrS; j++)
-			if (str == chr[j])return false;
+			if (str == chr[j])return true;
 	}
-	return true;
+	return false;
 }
 
 void str::split(string line, char split, vector<string> & part) {
