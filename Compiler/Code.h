@@ -17,11 +17,14 @@ class Code {
 public:
 	Code(string file);
 	string nextWord();
-	void print();
+	char nextSymbol(bool viewmode);
+	char nextChar(bool viewmode);
+	void isComment();
 private:
 	string filename;
 	code start;
 	bool isInit = false;
+	bool inComment = false;
 	int line, symbol;
 	bool returnWord(string word, int i, int j);
 	int sizeWoCom(string str);

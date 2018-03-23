@@ -35,13 +35,13 @@ void Compiler::processCode(Code & TextCode)
 }
 void Compiler::processBlock(Code & TextCode, word & vct, int parent)
 {
-	searchWord(TextCode, vct, parent); //Вызов поиска слов в строке istr  запись их в вектор vct
+	spGlobal(TextCode, vct, parent); //Вызов поиска слов в строке istr  запись их в вектор vct
 	//unpackBlock(vct); //Обработка слов и запись их в вектор vct
 }
 
-bool Compiler::searchWord(Code & TextCode, word & vct, int parent)
+void Compiler::spGlobal(Code & TextCode, word & vct, int parent)
 {
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 20; i++) {
 		string t = TextCode.nextWord();
 		cout << t << endl;
 	}
@@ -52,8 +52,6 @@ bool Compiler::searchWord(Code & TextCode, word & vct, int parent)
 	else if (EquallyVar(tmp_wrd, istr, id, vct)) {}
 	else if (CallFunc(tmp_wrd, istr, id, vct)) {}
 	else { cout << "2 Unknow identifier: " << tmp_wrd << endl; tmp_wrd = ""; return false; }*/
-	return false;
-		
 }
 bool Compiler::readWordVar(string & istr, int & id, word & vct)
 {

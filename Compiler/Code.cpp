@@ -57,10 +57,30 @@ string Code::nextWord()
 	}
 }
 
-void Code::print()
+char Code::nextSymbol(bool viewmode = false)
 {
-	//for (int i = 0; i < body[7].size(); i++)
-		//cout << i << " : " << body[7][i] << endl;
+	for (int i = line; i < start.size(); i++) 
+		for (int j = symbol; j < start[i].size(); j++) 
+			if (!str::isChrBeStr(start[i][j], "		\n\r")) {
+				if (!viewmode) {
+					line = i;
+					symbol = j + 1;
+				}
+				return start[i][j];
+			}
+}
+
+char Code::nextChar(bool viewmode = false)
+{
+	for (int i = line; i < start.size(); i++)
+		for (int j = symbol; j < start[i].size(); j++)
+			if (!str::isChrBeStr(start[i][j], "\n\r")) {
+				if(!viewmode) {
+					line = i;
+					symbol = j + 1;
+				}
+				return start[i][j];
+			}
 }
 
 bool Code::returnWord(string word, int i, int j)
@@ -76,8 +96,22 @@ bool Code::returnWord(string word, int i, int j)
 int Code::sizeWoCom(string str)
 {
 	int size = str.size();
-	if (str.find("/*") != string::npos) size = (int)str.find("/*");
-	if (str.find("//") != string::npos) size = (int)str.find("//");
+	if (!inComment) {
+		int open = str.find("/*");
+		if (open < size) {
+			if (str[open - 1] != '\\')size = open;
+			inComment = size;
+		}
+	}
+	else {
+		if (str.find("* /") < size) {
+			if (str[str.find("* /") - 1] != '\\')size = (int)str.find("* /");
+			if (size >= symbol) {
+				inComment = true;
+				return -1;
+			}
+		}
+	}
 }
 
 string str::letters = { "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" }; //54 символа
