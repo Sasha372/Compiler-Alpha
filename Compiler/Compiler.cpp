@@ -43,19 +43,13 @@ void Compiler::spGlobal(Code & TextCode, word & vct, int parent)
 {
 	for (int i = 0; i < 10; i++) {
 		//cout << TextCode.nextSymbol(true) << endl;
-		/*switch (TextCode.nextSymbol(true))
+		switch (TextCode.nextSymbol(true))
 		{
-		case '/':
-			TextCode.nextSymbol(false);
-			if (TextCode.nextChar(true) == '*') {
-				TextCode.skipComment("* /");
-			}
-			break;
 		default:
 			string t = TextCode.nextWord();
 			cout << t << endl;
-		}*/
-		char t = TextCode.nextSymbol(false);
+		}
+		//char t = TextCode.nextSymbol(false);
 		//cout << t << endl;
 	}
 	/*if (tmp_wrd == "var") { readWordVar(istr, id, vct); tmp_wrd = ""; } //Если слово 

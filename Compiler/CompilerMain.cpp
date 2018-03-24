@@ -50,8 +50,7 @@ a SplitFilename(const string& str)
 
 void Work(string inputFile, string preCPFile, string outputFile)
 {
-	Code TextCode(inputFile);
-	cout << (int)'\n' << ":" << (int)'\r' << endl;//":" << (int)'' <<
+	Code TextCode(inputFile, "//", "/*", "*/");
 	//PreCPU::processCode(inputFile, outPreCPU);
 
 	//Запись результата работы препроцессора
@@ -65,7 +64,7 @@ void Work(string inputFile, string preCPFile, string outputFile)
 
 	Compiler::processCode(TextCode); //Обработка компиляторо
 	cout << "===============================================" << endl;
-	cout << "WWW" << endl;
+	//cout << "WWW" << endl;
 
 	//rezult.push_back("1");
 	//Linker::Process(outComp, rezult);

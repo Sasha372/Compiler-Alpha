@@ -1,27 +1,36 @@
 ﻿#include "stdafx.h"
 #include <fstream>
 #include "Code.h"
-#include "Random.h"
 using namespace std;
 
-Code::Code(string file)
+Code::Code(string file, string strCom, string beginCom, string endCom)
 {
 	if (!isInit) {
 		filename = file;
+		strComm = strCom;
+		beginComm = beginCom;
+		endComm = endCom;
+
 		cout << file << endl;
 		ifstream input(file);
 		string in;
+		code temp;
 		while (getline(input, in))
 		{
-			auto str = cutStringComm(in);
-			start.push_back(str);
-			cout << str << endl;
+			cutStringComm(in);
+			temp.push_back(in);
+			cout << in << endl;
 		}
 		input.close();
 		line = 0;
 		symbol = 0;
+
 		isInit = true;
 		cout << "Initialization finised" << endl;
+
+		cutBlockComm(temp, start);
+		for (auto i = start.begin(); i != start.end(); i++)
+			cout << *i << endl;
 	}
 }
 
@@ -64,7 +73,7 @@ char Code::nextSymbol(bool viewmode = false)
 {
 	for (int i = line; i < start.size(); i++) {
 		for (int j = symbol; j < start[i].size(); j++) {
-			if (!str::isChrBeStr(start[i][j], "" + (char)13 + (char)10 + (char)32 + (char)9)) { //9 - '	', 32 - ' ';
+			if (!str::isChrBeStr(start[i][j], " \t\r\n")) { //9 - '	', 32 - ' '; "" + (char)13 + (char)10 + (char)32 + (char)9
 				if (!viewmode) {
 					cout << "NS: " << (int)start[i][j] << " : " << start[i][j] << endl;
 					line = i;
@@ -91,13 +100,11 @@ char Code::nextChar(bool viewmode = false)
 
 void Code::skipComment(string endComm)
 {
-	while (true) {
-		if ((nextSymbol() == '*'))
-		{
-			if (nextChar() == '/')
-			{
-				cout << "End of comment was find" << endl;
-			}
+	for (int i = line; i < start.size(); i++) {
+		int end = (int)start[i].find(endComm);
+		if (end != string::npos) {
+			line = i;
+			symbol = end + endComm.size();
 		}
 	}
 }
@@ -112,15 +119,69 @@ bool Code::returnWord(string word, int i, int j)
 	return false;
 }
 
-string Code::cutStringComm(string str)
+void Code::cutStringComm(string & str)
 {
-	//string rezult;
-	int comm = str.find("//");
-	if (comm != string::npos)
-	{
-		return str.substr(0, comm);
+	if (strComm != "") {
+		int comm = str.find(strComm);
+		if (comm != string::npos)
+		{
+			string tmp = str.substr(0, comm);
+			str = tmp;
+		}
 	}
-	return str;
+}
+
+void Code::cutBlockComm(code & str, code & out)
+{
+	bool inComm = false;
+	for (auto i = str.begin(); i != str.end(); i++)
+	{
+		bool inQuot = false;
+		string aaa = *i;
+		if ((aaa.find(beginComm) != string::npos) || (aaa.find(endComm) != string::npos)) {
+			string temp;
+			for (int g = 0; g < aaa.size(); g++)
+			{
+				char* j = &aaa[g];
+				if ((*j == '"') || (*j == '\'')) inQuot = !inQuot;
+				if (!inQuot) {
+					if (inComm) {
+						if (str::isStrInStr(*i, g, endComm)) {
+							inComm = false;
+							g += endComm.size();
+						}
+					}
+					else {
+						if (str::isStrInStr(*i, g, beginComm)) {
+							inComm = true;
+							g += beginComm.size();
+						}
+						else temp += *j;
+					}
+					/*if (str::isStrInStr(*i, id, endComm)) {
+						inComm = false;
+						*j += endComm.size() + 1;
+					}
+					else if (str::isStrInStr(*i, id, beginComm)) {
+						inComm = true;
+						*j += beginComm.size();
+					}
+					else if (!inComm) {
+						temp += *j;
+					}*/
+				}
+				else temp += *j;
+			}
+			if (inComm) out.push_back("");
+			else out.push_back(temp);
+			//cout << "1: " << *(out.end() - 1) << endl;
+		}
+		else {
+			if (inComm) out.push_back("");
+			else out.push_back(*i);
+			//cout << "2: " << *(out.end() - 1) << endl;
+		}
+	}
 }
 
 int Code::sizeWoCom(string str)
@@ -142,56 +203,4 @@ int Code::sizeWoCom(string str)
 			}
 		}
 	}
-}
-
-string str::letters = { "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" }; //54 символа
-string str::digits  = { "0123456789" }; //10 символов
-
-bool str::onlySpace(string str)
-{
-	size_t found = str.find_first_not_of("	 ");
-	if (found != string::npos) {
-		return false;
-	}
-	else {
-		return true;
-	}
-}
-
-string str::CharRand() {
-	string st;
-	int ti = letters.size() - 1;
-	for (int i = 0; i < 10; i++)
-		st += letters[random(0, ti)];
-	return st;
-}
-
-//Вернет true если символ есть в строке
-bool str::isChrBeStr(char str, string chr) {
-	int strS = 1;// str.size();
-	int chrS = chr.size();
-
-	cout << "===========In iCBS: " << str << " : " << chr << endl;
-
-	for (int i = 0; i < strS; i++) {
-		for (int j = 0; j < chrS; j++) {
-			cout << "iCBS: " << chr[j] << " : " << (int)chr[j] << endl;
-			if (str == chr[j])return true;
-		}
-	}
-	cout << "========== = In iCBS: char not str" << endl;
-	return false;
-}
-
-void str::split(string line, char split, vector<string> & part) {
-	string buffer = ""; //буфферная строка
-	for (int i = 0; i < line.size(); i++) {
-		if (line[i] != split)
-			buffer += line[i];
-		else {
-			part.push_back(buffer);
-			buffer = "";
-		}
-	}
-	part.push_back(buffer);
 }

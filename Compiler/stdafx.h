@@ -13,5 +13,6 @@
 #include <io.h>
 #include <Windows.h>
 #include "Code.h"
+#include "str.h"
 
 // TODO: Установите здесь ссылки на дополнительные заголовки, требующиеся для программы

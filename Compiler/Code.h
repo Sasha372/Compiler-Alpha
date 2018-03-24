@@ -1,21 +1,12 @@
-﻿#ifndef STR_H
-#define STR_H
+﻿#ifndef CODE_H
+#define CODE_H
 #include <vector>
 using namespace std;
 typedef vector<string> code;
 
-namespace str {
-	extern string letters; // = { "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" }; //54 символа
-	extern string digits; // = { "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" }; //54 символа
-	bool onlySpace(string str);
-	string CharRand();
-	bool isChrBeStr(char str, string chr);
-	void split(string line, char split, vector<string> & part);
-}
-
 class Code {
 public:
-	Code(string file);
+	Code(string file, string strCom, string beginCom, string endCom);
 	string nextWord();
 	char nextSymbol(bool viewmode);
 	char nextChar(bool viewmode);
@@ -26,10 +17,13 @@ private:
 	bool isInit = false;
 	bool inComment = false;
 	int line, symbol;
+	string strComm, beginComm, endComm;
+
 	bool returnWord(string word, int i, int j);
-	string cutStringComm(string str);
+	void cutStringComm(string & str);
+	void cutBlockComm(code & str, code & out);
 	int sizeWoCom(string str);
 };
 
-#endif // !STR_H
+#endif // !CODE_H
 
