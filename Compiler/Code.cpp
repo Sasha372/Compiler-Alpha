@@ -1,4 +1,4 @@
-#include "stdafx.h"
+п»ї#include "stdafx.h"
 #include <fstream>
 #include "Code.h"
 #include "Random.h"
@@ -8,17 +8,20 @@ Code::Code(string file)
 {
 	if (!isInit) {
 		filename = file;
+		cout << file << endl;
 		ifstream input(file);
 		string in;
 		while (getline(input, in))
 		{
-			start.push_back(in);
-			//cout << in << endl;
+			auto str = cutStringComm(in);
+			start.push_back(str);
+			cout << str << endl;
 		}
 		input.close();
 		line = 0;
 		symbol = 0;
 		isInit = true;
+		cout << "Initialization finised" << endl;
 	}
 }
 
@@ -27,8 +30,8 @@ string Code::nextWord()
 	string word;
 	for (int i = line; i < start.size(); i++) {
 		bool inQuotes = false;
-		int size = sizeWoCom(start[i]);
-		for (int j = symbol; j < size; j++) {
+		//int size = sizeWoCom(start[i]);
+		for (int j = symbol; j < start[i].size(); j++) {
 			char crChar = start[i][j];
 			if (!inQuotes) {
 				if ((crChar == '"') || (crChar == '\'')) {
@@ -48,7 +51,7 @@ string Code::nextWord()
 				else if (!str::isChrBeStr(crChar, "\n\r"))
 					word += crChar;
 				else if (returnWord(word, i, j)) {
-					//TODO: Ошибка не закрытой кавычки
+					//TODO: РћС€РёР±РєР° РЅРµ Р·Р°РєСЂС‹С‚РѕР№ РєР°РІС‹С‡РєРё
 					return word;
 				}
 			}
@@ -59,15 +62,18 @@ string Code::nextWord()
 
 char Code::nextSymbol(bool viewmode = false)
 {
-	for (int i = line; i < start.size(); i++) 
-		for (int j = symbol; j < start[i].size(); j++) 
-			if (!str::isChrBeStr(start[i][j], "		\n\r")) {
+	for (int i = line; i < start.size(); i++) {
+		for (int j = symbol; j < start[i].size(); j++) {
+			if (!str::isChrBeStr(start[i][j], "" + (char)13 + (char)10 + (char)32 + (char)9)) { //9 - '	', 32 - ' ';
 				if (!viewmode) {
+					cout << "NS: " << (int)start[i][j] << " : " << start[i][j] << endl;
 					line = i;
 					symbol = j + 1;
 				}
 				return start[i][j];
 			}
+		}
+	}
 }
 
 char Code::nextChar(bool viewmode = false)
@@ -83,6 +89,19 @@ char Code::nextChar(bool viewmode = false)
 			}
 }
 
+void Code::skipComment(string endComm)
+{
+	while (true) {
+		if ((nextSymbol() == '*'))
+		{
+			if (nextChar() == '/')
+			{
+				cout << "End of comment was find" << endl;
+			}
+		}
+	}
+}
+
 bool Code::returnWord(string word, int i, int j)
 {
 	if (!word.empty()) {
@@ -91,6 +110,17 @@ bool Code::returnWord(string word, int i, int j)
 		return true;
 	}
 	return false;
+}
+
+string Code::cutStringComm(string str)
+{
+	//string rezult;
+	int comm = str.find("//");
+	if (comm != string::npos)
+	{
+		return str.substr(0, comm);
+	}
+	return str;
 }
 
 int Code::sizeWoCom(string str)
@@ -114,8 +144,8 @@ int Code::sizeWoCom(string str)
 	}
 }
 
-string str::letters = { "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" }; //54 символа
-string str::digits  = { "0123456789" }; //10 символов
+string str::letters = { "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" }; //54 СЃРёРјРІРѕР»Р°
+string str::digits  = { "0123456789" }; //10 СЃРёРјРІРѕР»РѕРІ
 
 bool str::onlySpace(string str)
 {
@@ -136,20 +166,25 @@ string str::CharRand() {
 	return st;
 }
 
-//Вернет true если символ есть в строке
+//Р’РµСЂРЅРµС‚ true РµСЃР»Рё СЃРёРјРІРѕР» РµСЃС‚СЊ РІ СЃС‚СЂРѕРєРµ
 bool str::isChrBeStr(char str, string chr) {
 	int strS = 1;// str.size();
 	int chrS = chr.size();
 
+	cout << "===========In iCBS: " << str << " : " << chr << endl;
+
 	for (int i = 0; i < strS; i++) {
-		for (int j = 0; j < chrS; j++)
+		for (int j = 0; j < chrS; j++) {
+			cout << "iCBS: " << chr[j] << " : " << (int)chr[j] << endl;
 			if (str == chr[j])return true;
+		}
 	}
+	cout << "========== = In iCBS: char not str" << endl;
 	return false;
 }
 
 void str::split(string line, char split, vector<string> & part) {
-	string buffer = ""; //буфферная строка
+	string buffer = ""; //Р±СѓС„С„РµСЂРЅР°СЏ СЃС‚СЂРѕРєР°
 	for (int i = 0; i < line.size(); i++) {
 		if (line[i] != split)
 			buffer += line[i];

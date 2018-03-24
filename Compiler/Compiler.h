@@ -1,21 +1,21 @@
-#pragma once
+п»ї#pragma once
 #ifndef COMPILER_H
 #define COMPILER_H
 
-#define Glob 0 //Слово в глобальном пространстве
-#define Var 1 //Тип переменной
-#define Var_eq 2 //Присваевание переменной значения
-#define Func 3 //Тип функции
-#define Func_arg 4 //Агрументы функции
-#define Func_cl 5 //Вызов функции
+#define Glob 0 //РЎР»РѕРІРѕ РІ РіР»РѕР±Р°Р»СЊРЅРѕРј РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРµ
+#define Var 1 //РўРёРї РїРµСЂРµРјРµРЅРЅРѕР№
+#define Var_eq 2 //РџСЂРёСЃРІР°РµРІР°РЅРёРµ РїРµСЂРµРјРµРЅРЅРѕР№ Р·РЅР°С‡РµРЅРёСЏ
+#define Func 3 //РўРёРї С„СѓРЅРєС†РёРё
+#define Func_arg 4 //РђРіСЂСѓРјРµРЅС‚С‹ С„СѓРЅРєС†РёРё
+#define Func_cl 5 //Р’С‹Р·РѕРІ С„СѓРЅРєС†РёРё
 #define Func_API 6
-#define Ret 7 //Тип return
-#define While 8 //Тип цикла while
-#define Whl_arg 9 //Аргументы цикла while
-#define For 10 // Тип цикла for
-#define For_arg 11 //Аргументы цикла for
-#define If 12 //Тип условия
-#define If_arg  13 //Аргументы условия
+#define Ret 7 //РўРёРї return
+#define While 8 //РўРёРї С†РёРєР»Р° while
+#define Whl_arg 9 //РђСЂРіСѓРјРµРЅС‚С‹ С†РёРєР»Р° while
+#define For 10 // РўРёРї С†РёРєР»Р° for
+#define For_arg 11 //РђСЂРіСѓРјРµРЅС‚С‹ С†РёРєР»Р° for
+#define If 12 //РўРёРї СѓСЃР»РѕРІРёСЏ
+#define If_arg  13 //РђСЂРіСѓРјРµРЅС‚С‹ СѓСЃР»РѕРІРёСЏ
 #define User 14
 
 #include <vector>
@@ -27,21 +27,21 @@ namespace Compiler {
 
 	//================================//
 
-	void processCode(Code & TextCode); //Входная функция компилятора
-	void processBlock(Code & TextCode, word & vct, int parent); //Обработка блока кода
+	void processCode(Code & TextCode); //Р’С…РѕРґРЅР°СЏ С„СѓРЅРєС†РёСЏ РєРѕРјРїРёР»СЏС‚РѕСЂР°
+	void processBlock(Code & TextCode, word & vct, int parent); //РћР±СЂР°Р±РѕС‚РєР° Р±Р»РѕРєР° РєРѕРґР°
 
-	void spGlobal(Code & TextCode, word & vct, int parent); //Посик слов в блоке кода
-	bool readWordVar(string & istr, int & id, word & vct); //Чтение слова var
-	bool readWordFunc(string & istr, int & id, word & vct); //Чтение слова func
-	bool readWordWhile(string & istr, int & id, word & vct); //Чтение слова while
-	bool readWordReturn(string & istr, int & id, word & vct); //Чтение слова return
-	bool readWordIf(string & istr, int & id, word & vct); //Чтение слова if
+	void spGlobal(Code & TextCode, word & vct, int parent); //РџРѕСЃРёРє СЃР»РѕРІ РІ Р±Р»РѕРєРµ РєРѕРґР°
+	bool readWordVar(string & istr, int & id, word & vct); //Р§С‚РµРЅРёРµ СЃР»РѕРІР° var
+	bool readWordFunc(string & istr, int & id, word & vct); //Р§С‚РµРЅРёРµ СЃР»РѕРІР° func
+	bool readWordWhile(string & istr, int & id, word & vct); //Р§С‚РµРЅРёРµ СЃР»РѕРІР° while
+	bool readWordReturn(string & istr, int & id, word & vct); //Р§С‚РµРЅРёРµ СЃР»РѕРІР° return
+	bool readWordIf(string & istr, int & id, word & vct); //Р§С‚РµРЅРёРµ СЃР»РѕРІР° if
 	bool readWordDLL(string & istr, int & id, word & vct);
 
 	//================================//
 
-	bool EquallyVar(string name, string & istr, int & id, word & vct); //Обработка присаивания переменной значения
-	bool CallFunc(string name, string & istr, int & id, word & vct); //Обработка вызова функции
+	bool EquallyVar(string name, string & istr, int & id, word & vct); //РћР±СЂР°Р±РѕС‚РєР° РїСЂРёСЃР°РёРІР°РЅРёСЏ РїРµСЂРµРјРµРЅРЅРѕР№ Р·РЅР°С‡РµРЅРёСЏ
+	bool CallFunc(string name, string & istr, int & id, word & vct); //РћР±СЂР°Р±РѕС‚РєР° РІС‹Р·РѕРІР° С„СѓРЅРєС†РёРё
 	
 	//================================//
 

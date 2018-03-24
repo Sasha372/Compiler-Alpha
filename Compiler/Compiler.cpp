@@ -1,16 +1,16 @@
-#include "stdafx.h"
+п»ї#include "stdafx.h"
 #include "Compiler.h"
 using namespace std;
 
 namespace Compiler {
 	int listWordSize = 0;
 	struct word {
-		string name; //Имя функции, переменной
-		int type; //Тип слова
-		string str; //Не распакованная сторка
+		string name; //РРјСЏ С„СѓРЅРєС†РёРё, РїРµСЂРµРјРµРЅРЅРѕР№
+		int type; //РўРёРї СЃР»РѕРІР°
+		string str; //РќРµ СЂР°СЃРїР°РєРѕРІР°РЅРЅР°СЏ СЃС‚РѕСЂРєР°
 		int parent;
-		vector<word> arg; //Аргумент после распаковки из str. Содержит 
-		vector<word> body; //Слова после распаковки из str
+		vector<word> arg; //РђСЂРіСѓРјРµРЅС‚ РїРѕСЃР»Рµ СЂР°СЃРїР°РєРѕРІРєРё РёР· str. РЎРѕРґРµСЂР¶РёС‚ 
+		vector<word> body; //РЎР»РѕРІР° РїРѕСЃР»Рµ СЂР°СЃРїР°РєРѕРІРєРё РёР· str
 	};
 	word Global;
 	vector<word> listFunc;
@@ -30,22 +30,35 @@ void Compiler::processCode(Code & TextCode)
 
 	//==============================//
 
-	processBlock(TextCode, Global, Glob); //Запуск обработки кода и запись слов п вектор listWord
+	processBlock(TextCode, Global, Glob); //Р—Р°РїСѓСЃРє РѕР±СЂР°Р±РѕС‚РєРё РєРѕРґР° Рё Р·Р°РїРёСЃСЊ СЃР»РѕРІ Рї РІРµРєС‚РѕСЂ listWord
 	//glueCode(Global, out);
 }
 void Compiler::processBlock(Code & TextCode, word & vct, int parent)
 {
-	spGlobal(TextCode, vct, parent); //Вызов поиска слов в строке istr  запись их в вектор vct
-	//unpackBlock(vct); //Обработка слов и запись их в вектор vct
+	spGlobal(TextCode, vct, parent); //Р’С‹Р·РѕРІ РїРѕРёСЃРєР° СЃР»РѕРІ РІ СЃС‚СЂРѕРєРµ istr  Р·Р°РїРёСЃСЊ РёС… РІ РІРµРєС‚РѕСЂ vct
+	//unpackBlock(vct); //РћР±СЂР°Р±РѕС‚РєР° СЃР»РѕРІ Рё Р·Р°РїРёСЃСЊ РёС… РІ РІРµРєС‚РѕСЂ vct
 }
 
 void Compiler::spGlobal(Code & TextCode, word & vct, int parent)
 {
-	for (int i = 0; i < 20; i++) {
-		string t = TextCode.nextWord();
-		cout << t << endl;
+	for (int i = 0; i < 10; i++) {
+		//cout << TextCode.nextSymbol(true) << endl;
+		/*switch (TextCode.nextSymbol(true))
+		{
+		case '/':
+			TextCode.nextSymbol(false);
+			if (TextCode.nextChar(true) == '*') {
+				TextCode.skipComment("* /");
+			}
+			break;
+		default:
+			string t = TextCode.nextWord();
+			cout << t << endl;
+		}*/
+		char t = TextCode.nextSymbol(false);
+		//cout << t << endl;
 	}
-	/*if (tmp_wrd == "var") { readWordVar(istr, id, vct); tmp_wrd = ""; } //Если слово 
+	/*if (tmp_wrd == "var") { readWordVar(istr, id, vct); tmp_wrd = ""; } //Р•СЃР»Рё СЃР»РѕРІРѕ 
 	else if (tmp_wrd == "while") { readWordWhile(istr, id, vct); tmp_wrd = ""; }
 	else if (tmp_wrd == "return") { readWordReturn(istr, id, vct); tmp_wrd = ""; }
 	else if (tmp_wrd == "if") { readWordIf(istr, id, vct); tmp_wrd = ""; }
@@ -56,57 +69,57 @@ void Compiler::spGlobal(Code & TextCode, word & vct, int parent)
 bool Compiler::readWordVar(string & istr, int & id, word & vct)
 {
 	id++;
-	string str_var; //Сторка с переменной и значением
-	bool quotes = false; //true если кавычки открыты, false если кавычки закрыты
-	while (istr[id] != ';' && istr[id] != 0) { //Пока не встретиться знак ';' или знак ',' или 0
+	string str_var; //РЎС‚РѕСЂРєР° СЃ РїРµСЂРµРјРµРЅРЅРѕР№ Рё Р·РЅР°С‡РµРЅРёРµРј
+	bool quotes = false; //true РµСЃР»Рё РєР°РІС‹С‡РєРё РѕС‚РєСЂС‹С‚С‹, false РµСЃР»Рё РєР°РІС‹С‡РєРё Р·Р°РєСЂС‹С‚С‹
+	while (istr[id] != ';' && istr[id] != 0) { //РџРѕРєР° РЅРµ РІСЃС‚СЂРµС‚РёС‚СЊСЃСЏ Р·РЅР°Рє ';' РёР»Рё Р·РЅР°Рє ',' РёР»Рё 0
 		if (currFunc != "" && istr[id] == ',')break;
-		if (istr[id] == '\"' || istr[id] == '\'')quotes = !quotes; //Если знак кавычки то инверстия их соостояния
-		if (!(istr[id] == ' ') || quotes)str_var += istr[id]; //Если не пробел то добавление к строке
+		if (istr[id] == '\"' || istr[id] == '\'')quotes = !quotes; //Р•СЃР»Рё Р·РЅР°Рє РєР°РІС‹С‡РєРё С‚Рѕ РёРЅРІРµСЂСЃС‚РёСЏ РёС… СЃРѕРѕСЃС‚РѕСЏРЅРёСЏ
+		if (!(istr[id] == ' ') || quotes)str_var += istr[id]; //Р•СЃР»Рё РЅРµ РїСЂРѕР±РµР» С‚Рѕ РґРѕР±Р°РІР»РµРЅРёРµ Рє СЃС‚СЂРѕРєРµ
 		id++;
 	}
-	if (quotes) { //Если кавычки не были закрыты вывод ошибки
+	if (quotes) { //Р•СЃР»Рё РєР°РІС‹С‡РєРё РЅРµ Р±С‹Р»Рё Р·Р°РєСЂС‹С‚С‹ РІС‹РІРѕРґ РѕС€РёР±РєРё
 		cout << "Quotes in innitialize variable unclose: " << str_var << endl; 
-		return false; //Прерывание компиляции
+		return false; //РџСЂРµСЂС‹РІР°РЅРёРµ РєРѕРјРїРёР»СЏС†РёРё
 	}
 	
-	vector<string> tmp_str_var; //Вектор с строками переменных через запятую
-	str::split(str_var, ',', tmp_str_var); //Разбиение целой строки на части
+	vector<string> tmp_str_var; //Р’РµРєС‚РѕСЂ СЃ СЃС‚СЂРѕРєР°РјРё РїРµСЂРµРјРµРЅРЅС‹С… С‡РµСЂРµР· Р·Р°РїСЏС‚СѓСЋ
+	str::split(str_var, ',', tmp_str_var); //Р Р°Р·Р±РёРµРЅРёРµ С†РµР»РѕР№ СЃС‚СЂРѕРєРё РЅР° С‡Р°СЃС‚Рё
 
 	for (int i = 0; i < tmp_str_var.size(); i++) {
-		word tmp; //Временной слово
-		word arg; //Временная строка с значением переменной
-		vector<string> str; //Вектор со сторками [0] - имя переменной [1] - значение
-		tmp.str = tmp_str_var[i]; //Кеширование
-		tmp.type = Var; //Запись типа слова
+		word tmp; //Р’СЂРµРјРµРЅРЅРѕР№ СЃР»РѕРІРѕ
+		word arg; //Р’СЂРµРјРµРЅРЅР°СЏ СЃС‚СЂРѕРєР° СЃ Р·РЅР°С‡РµРЅРёРµРј РїРµСЂРµРјРµРЅРЅРѕР№
+		vector<string> str; //Р’РµРєС‚РѕСЂ СЃРѕ СЃС‚РѕСЂРєР°РјРё [0] - РёРјСЏ РїРµСЂРµРјРµРЅРЅРѕР№ [1] - Р·РЅР°С‡РµРЅРёРµ
+		tmp.str = tmp_str_var[i]; //РљРµС€РёСЂРѕРІР°РЅРёРµ
+		tmp.type = Var; //Р—Р°РїРёСЃСЊ С‚РёРїР° СЃР»РѕРІР°
 
-		str::split(str_var, '=', str); //Извлечение имени переменной и её значения
+		str::split(str_var, '=', str); //РР·РІР»РµС‡РµРЅРёРµ РёРјРµРЅРё РїРµСЂРµРјРµРЅРЅРѕР№ Рё РµС‘ Р·РЅР°С‡РµРЅРёСЏ
 
-		tmp.name = str[0]; //Присваивание имени переменной
-		if (currFunc != "") { //Если находимся в туле функции
-			tmp.name = currFunc + "." + tmp.name; //Добавляем к имени имя функции
+		tmp.name = str[0]; //РџСЂРёСЃРІР°РёРІР°РЅРёРµ РёРјРµРЅРё РїРµСЂРµРјРµРЅРЅРѕР№
+		if (currFunc != "") { //Р•СЃР»Рё РЅР°С…РѕРґРёРјСЃСЏ РІ С‚СѓР»Рµ С„СѓРЅРєС†РёРё
+			tmp.name = currFunc + "." + tmp.name; //Р”РѕР±Р°РІР»СЏРµРј Рє РёРјРµРЅРё РёРјСЏ С„СѓРЅРєС†РёРё
 		}
 
-		if (str.size() == 2) { //Если есть 2я часть
-			arg.str = str[1]; //Запись в аргумент
+		if (str.size() == 2) { //Р•СЃР»Рё РµСЃС‚СЊ 2СЏ С‡Р°СЃС‚СЊ
+			arg.str = str[1]; //Р—Р°РїРёСЃСЊ РІ Р°СЂРіСѓРјРµРЅС‚
 		}
-		else //Если 2я часть не указана
-			if (str.size() == 1) { //Если всего частй 1
-				arg.str = "0"; //Значение переменной будет "0"
+		else //Р•СЃР»Рё 2СЏ С‡Р°СЃС‚СЊ РЅРµ СѓРєР°Р·Р°РЅР°
+			if (str.size() == 1) { //Р•СЃР»Рё РІСЃРµРіРѕ С‡Р°СЃС‚Р№ 1
+				arg.str = "0"; //Р—РЅР°С‡РµРЅРёРµ РїРµСЂРµРјРµРЅРЅРѕР№ Р±СѓРґРµС‚ "0"
 			}
-			else return false; //Если частей не 1 то ошибка 
+			else return false; //Р•СЃР»Рё С‡Р°СЃС‚РµР№ РЅРµ 1 С‚Рѕ РѕС€РёР±РєР° 
 
-		word usr; //Слово для обработки присваивания значений
-		usr.type = Var; //Тип слова - переменная
-		usr.name = tmp.name; //Имен переменной
-		if (currFunc != "") //Если переменная объявлена в функции
-			listVarLocal.push_back(usr); //Добавлени в вектор локальных с пользовательскими переменныйми
-		else //Если в глобальном пространстве
-			listVarGlob.push_back(usr); //Добавлени в вектор глобальных с пользовательскими переменныйми
+		word usr; //РЎР»РѕРІРѕ РґР»СЏ РѕР±СЂР°Р±РѕС‚РєРё РїСЂРёСЃРІР°РёРІР°РЅРёСЏ Р·РЅР°С‡РµРЅРёР№
+		usr.type = Var; //РўРёРї СЃР»РѕРІР° - РїРµСЂРµРјРµРЅРЅР°СЏ
+		usr.name = tmp.name; //РРјРµРЅ РїРµСЂРµРјРµРЅРЅРѕР№
+		if (currFunc != "") //Р•СЃР»Рё РїРµСЂРµРјРµРЅРЅР°СЏ РѕР±СЉСЏРІР»РµРЅР° РІ С„СѓРЅРєС†РёРё
+			listVarLocal.push_back(usr); //Р”РѕР±Р°РІР»РµРЅРё РІ РІРµРєС‚РѕСЂ Р»РѕРєР°Р»СЊРЅС‹С… СЃ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёРјРё РїРµСЂРµРјРµРЅРЅС‹Р№РјРё
+		else //Р•СЃР»Рё РІ РіР»РѕР±Р°Р»СЊРЅРѕРј РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРµ
+			listVarGlob.push_back(usr); //Р”РѕР±Р°РІР»РµРЅРё РІ РІРµРєС‚РѕСЂ РіР»РѕР±Р°Р»СЊРЅС‹С… СЃ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёРјРё РїРµСЂРµРјРµРЅРЅС‹Р№РјРё
 
-		tmp.arg.push_back(arg); //Добавлени в конец вектора аргуменов слова значения переменной
-		vct.body.push_back(tmp); //Добавление к главному дереву слов
+		tmp.arg.push_back(arg); //Р”РѕР±Р°РІР»РµРЅРё РІ РєРѕРЅРµС† РІРµРєС‚РѕСЂР° Р°СЂРіСѓРјРµРЅРѕРІ СЃР»РѕРІР° Р·РЅР°С‡РµРЅРёСЏ РїРµСЂРµРјРµРЅРЅРѕР№
+		vct.body.push_back(tmp); //Р”РѕР±Р°РІР»РµРЅРёРµ Рє РіР»Р°РІРЅРѕРјСѓ РґРµСЂРµРІСѓ СЃР»РѕРІ
 	}
-	return true; //Успешно
+	return true; //РЈСЃРїРµС€РЅРѕ
 }
 bool Compiler::readWordFunc(string & istr, int & id, word & vct)
 {
@@ -131,7 +144,7 @@ bool Compiler::readWordFunc(string & istr, int & id, word & vct)
 		}
 		id++;
 		quotes = 1;
-		while (!(istr[id] == '{')) { //Промотать до первой фигурной скобки
+		while (!(istr[id] == '{')) { //РџСЂРѕРјРѕС‚Р°С‚СЊ РґРѕ РїРµСЂРІРѕР№ С„РёРіСѓСЂРЅРѕР№ СЃРєРѕР±РєРё
 			id++;
 		}
 		id++;
@@ -165,10 +178,10 @@ bool Compiler::readWordFunc(string & istr, int & id, word & vct)
 }
 bool Compiler::readWordWhile(string & istr, int & id, word & vct)
 {
-	word while_arg; //Условие при котором цикл будет исполняться
-	word while_body; //Тело цикла
+	word while_arg; //РЈСЃР»РѕРІРёРµ РїСЂРё РєРѕС‚РѕСЂРѕРј С†РёРєР» Р±СѓРґРµС‚ РёСЃРїРѕР»РЅСЏС‚СЊСЃСЏ
+	word while_body; //РўРµР»Рѕ С†РёРєР»Р°
 	{
-		while (!(istr[id] == '(')) { //Промотать до первой круглой скобки
+		while (!(istr[id] == '(')) { //РџСЂРѕРјРѕС‚Р°С‚СЊ РґРѕ РїРµСЂРІРѕР№ РєСЂСѓРіР»РѕР№ СЃРєРѕР±РєРё
 			id++;
 		}
 		id++;
@@ -181,7 +194,7 @@ bool Compiler::readWordWhile(string & istr, int & id, word & vct)
 			id++;
 		}
 		quotes = 1;
-		while (!(istr[id] == '{')) { //Промотать до первой фигурной скобки
+		while (!(istr[id] == '{')) { //РџСЂРѕРјРѕС‚Р°С‚СЊ РґРѕ РїРµСЂРІРѕР№ С„РёРіСѓСЂРЅРѕР№ СЃРєРѕР±РєРё
 			id++;
 		}
 		id++;
@@ -226,11 +239,11 @@ bool Compiler::readWordReturn(string & istr, int & id, word & vct)
 }
 bool Compiler::readWordIf(string & istr, int & id, word & vct)
 {
-	word if_arg; //Условие при котором код будет исполняться
-	word if_body; //Тело условия
-	word if_else; //Тело else
+	word if_arg; //РЈСЃР»РѕРІРёРµ РїСЂРё РєРѕС‚РѕСЂРѕРј РєРѕРґ Р±СѓРґРµС‚ РёСЃРїРѕР»РЅСЏС‚СЊСЃСЏ
+	word if_body; //РўРµР»Рѕ СѓСЃР»РѕРІРёСЏ
+	word if_else; //РўРµР»Рѕ else
 	{
-		while (!(istr[id] == '(')) { //Промотать до первой круглой скобки
+		while (!(istr[id] == '(')) { //РџСЂРѕРјРѕС‚Р°С‚СЊ РґРѕ РїРµСЂРІРѕР№ РєСЂСѓРіР»РѕР№ СЃРєРѕР±РєРё
 			id++;
 		}
 		id++;
@@ -243,7 +256,7 @@ bool Compiler::readWordIf(string & istr, int & id, word & vct)
 			id++;
 		}
 		quotes = 1;
-		while (!(istr[id] == '{')) { //Промотать до первой фигурной скобки
+		while (!(istr[id] == '{')) { //РџСЂРѕРјРѕС‚Р°С‚СЊ РґРѕ РїРµСЂРІРѕР№ С„РёРіСѓСЂРЅРѕР№ СЃРєРѕР±РєРё
 			id++;
 		}
 		id++;
@@ -261,7 +274,7 @@ bool Compiler::readWordIf(string & istr, int & id, word & vct)
 		while (!(istr[id] == 0)) {
 			if (!(istr[id] == ' '))tmp_else += istr[id]; else { if (tmp_else.size() == 0)break; }
 			if (tmp_else == "else") {
-				while (!(istr[id] == '{')) { //Промотать до первой фигурной скобки
+				while (!(istr[id] == '{')) { //РџСЂРѕРјРѕС‚Р°С‚СЊ РґРѕ РїРµСЂРІРѕР№ С„РёРіСѓСЂРЅРѕР№ СЃРєРѕР±РєРё
 					id++;
 				}
 				id++;
@@ -349,45 +362,45 @@ bool Compiler::EquallyVar(string name, string & istr, int & id, word & vct)
 	if (!isUsr)return false;
 
 	id++;
-	string str_var; //Сторка с переменной и значением
-	bool quotes = false; //true если кавычки открыты, false если кавычки закрыты
-	while (istr[id] != ';' && istr[id] != 0) { //Пока не встретиться знак ';' или знак ',' или 0
-		if (istr[id] == '\"' || istr[id] == '\'')quotes = !quotes; //Если знак кавычки то инверстия их соостояния
-		if (!(istr[id] == ' ') || quotes)str_var += istr[id]; //Если не пробел то добавление к строке
+	string str_var; //РЎС‚РѕСЂРєР° СЃ РїРµСЂРµРјРµРЅРЅРѕР№ Рё Р·РЅР°С‡РµРЅРёРµРј
+	bool quotes = false; //true РµСЃР»Рё РєР°РІС‹С‡РєРё РѕС‚РєСЂС‹С‚С‹, false РµСЃР»Рё РєР°РІС‹С‡РєРё Р·Р°РєСЂС‹С‚С‹
+	while (istr[id] != ';' && istr[id] != 0) { //РџРѕРєР° РЅРµ РІСЃС‚СЂРµС‚РёС‚СЊСЃСЏ Р·РЅР°Рє ';' РёР»Рё Р·РЅР°Рє ',' РёР»Рё 0
+		if (istr[id] == '\"' || istr[id] == '\'')quotes = !quotes; //Р•СЃР»Рё Р·РЅР°Рє РєР°РІС‹С‡РєРё С‚Рѕ РёРЅРІРµСЂСЃС‚РёСЏ РёС… СЃРѕРѕСЃС‚РѕСЏРЅРёСЏ
+		if (!(istr[id] == ' ') || quotes)str_var += istr[id]; //Р•СЃР»Рё РЅРµ РїСЂРѕР±РµР» С‚Рѕ РґРѕР±Р°РІР»РµРЅРёРµ Рє СЃС‚СЂРѕРєРµ
 		id++;
 	}
-	if (quotes) { //Если кавычки не были закрыты вывод ошибки
+	if (quotes) { //Р•СЃР»Рё РєР°РІС‹С‡РєРё РЅРµ Р±С‹Р»Рё Р·Р°РєСЂС‹С‚С‹ РІС‹РІРѕРґ РѕС€РёР±РєРё
 		cout << "Quotes in innitialize variable unclose: " << str_var << endl;
-		return false; //Прерывание компиляции
+		return false; //РџСЂРµСЂС‹РІР°РЅРёРµ РєРѕРјРїРёР»СЏС†РёРё
 	}
 
-	vector<string> tmp_str; //Вектор с строками переменных через запятую
-	str::split(str_var, '=', tmp_str); //Разбиение челой строки на части
+	vector<string> tmp_str; //Р’РµРєС‚РѕСЂ СЃ СЃС‚СЂРѕРєР°РјРё РїРµСЂРµРјРµРЅРЅС‹С… С‡РµСЂРµР· Р·Р°РїСЏС‚СѓСЋ
+	str::split(str_var, '=', tmp_str); //Р Р°Р·Р±РёРµРЅРёРµ С‡РµР»РѕР№ СЃС‚СЂРѕРєРё РЅР° С‡Р°СЃС‚Рё
 
 	if (tmp_str.size() > 1) {
-		word tmp; //Временной слово
-		word arg; //Временная строка с значением переменной
-		tmp.str = name + "=" + tmp_str[1]; //Кеширование
-		tmp.type = Var; //Запись типа слова
+		word tmp; //Р’СЂРµРјРµРЅРЅРѕР№ СЃР»РѕРІРѕ
+		word arg; //Р’СЂРµРјРµРЅРЅР°СЏ СЃС‚СЂРѕРєР° СЃ Р·РЅР°С‡РµРЅРёРµРј РїРµСЂРµРјРµРЅРЅРѕР№
+		tmp.str = name + "=" + tmp_str[1]; //РљРµС€РёСЂРѕРІР°РЅРёРµ
+		tmp.type = Var; //Р—Р°РїРёСЃСЊ С‚РёРїР° СЃР»РѕРІР°
 
-		if (currFunc != "") { //Если находимся в теле функции
-			tmp.name = name; //Добавляем к имени имя функции
+		if (currFunc != "") { //Р•СЃР»Рё РЅР°С…РѕРґРёРјСЃСЏ РІ С‚РµР»Рµ С„СѓРЅРєС†РёРё
+			tmp.name = name; //Р”РѕР±Р°РІР»СЏРµРј Рє РёРјРµРЅРё РёРјСЏ С„СѓРЅРєС†РёРё
 		}
 		else return false;
 
-		if (tmp_str.size() == 2) { //Если есть 2я часть
-			int r = tmp_str[0].size(); //Размер строки перед ровно
-			if (r > 0) { //Если перед ровно что-то есть
-				if(!str::isChrBeStr(tmp_str[0][0], "+-*/")) //Если перед ровно стоит  + - * /
-					arg.str = name + tmp_str[0][r - 1] + tmp_str[1]; //Запись в аргумент
-				else cout << "Unexpected sumbol" << endl; //Если что-то другое ошибка
+		if (tmp_str.size() == 2) { //Р•СЃР»Рё РµСЃС‚СЊ 2СЏ С‡Р°СЃС‚СЊ
+			int r = tmp_str[0].size(); //Р Р°Р·РјРµСЂ СЃС‚СЂРѕРєРё РїРµСЂРµРґ СЂРѕРІРЅРѕ
+			if (r > 0) { //Р•СЃР»Рё РїРµСЂРµРґ СЂРѕРІРЅРѕ С‡С‚Рѕ-С‚Рѕ РµСЃС‚СЊ
+				if(!str::isChrBeStr(tmp_str[0][0], "+-*/")) //Р•СЃР»Рё РїРµСЂРµРґ СЂРѕРІРЅРѕ СЃС‚РѕРёС‚  + - * /
+					arg.str = name + tmp_str[0][r - 1] + tmp_str[1]; //Р—Р°РїРёСЃСЊ РІ Р°СЂРіСѓРјРµРЅС‚
+				else cout << "Unexpected sumbol" << endl; //Р•СЃР»Рё С‡С‚Рѕ-С‚Рѕ РґСЂСѓРіРѕРµ РѕС€РёР±РєР°
 			}
-			else arg.str = tmp_str[1]; //Запись в аргумент
+			else arg.str = tmp_str[1]; //Р—Р°РїРёСЃСЊ РІ Р°СЂРіСѓРјРµРЅС‚
 		}
-		else return false; //Если 2я часть не указана
+		else return false; //Р•СЃР»Рё 2СЏ С‡Р°СЃС‚СЊ РЅРµ СѓРєР°Р·Р°РЅР°
 
-		tmp.arg.push_back(arg); //Добавлени в конец вектора аргуменов слова значения переменной
-		vct.body.push_back(tmp); //Добавление к главному дереву слов
+		tmp.arg.push_back(arg); //Р”РѕР±Р°РІР»РµРЅРё РІ РєРѕРЅРµС† РІРµРєС‚РѕСЂР° Р°СЂРіСѓРјРµРЅРѕРІ СЃР»РѕРІР° Р·РЅР°С‡РµРЅРёСЏ РїРµСЂРµРјРµРЅРЅРѕР№
+		vct.body.push_back(tmp); //Р”РѕР±Р°РІР»РµРЅРёРµ Рє РіР»Р°РІРЅРѕРјСѓ РґРµСЂРµРІСѓ СЃР»РѕРІ
 	}
 	return true;
 }
@@ -420,8 +433,8 @@ bool Compiler::CallFunc(string name, string & istr, int & id, word & vct)
 			if (istr[id] == '(')quotes++;
 			if (istr[id] == ')')quotes--;
 			if (quotes == 0)break;
-			if (istr[id] == '\"' || istr[id] == '\'')Bquotes = !Bquotes; //Если знак кавычки то инверстия их соостояния
-			if (!(istr[id] == ' ') || quotes)arg.str += istr[id]; //Если не пробел то добавление к строке
+			if (istr[id] == '\"' || istr[id] == '\'')Bquotes = !Bquotes; //Р•СЃР»Рё Р·РЅР°Рє РєР°РІС‹С‡РєРё С‚Рѕ РёРЅРІРµСЂСЃС‚РёСЏ РёС… СЃРѕРѕСЃС‚РѕСЏРЅРёСЏ
+			if (!(istr[id] == ' ') || quotes)arg.str += istr[id]; //Р•СЃР»Рё РЅРµ РїСЂРѕР±РµР» С‚Рѕ РґРѕР±Р°РІР»РµРЅРёРµ Рє СЃС‚СЂРѕРєРµ
 			id++;
 		}
 
@@ -432,7 +445,7 @@ bool Compiler::CallFunc(string name, string & istr, int & id, word & vct)
 	else return false;
 }
 
-//Нахождение в слове других слов
+//РќР°С…РѕР¶РґРµРЅРёРµ РІ СЃР»РѕРІРµ РґСЂСѓРіРёС… СЃР»РѕРІ
 void Compiler::unpackBlock(word & vct)
 {	
 	/*cout << "uB: " << vct.body.size() << endl;
@@ -463,8 +476,8 @@ void Compiler::glueCode(word vct, vector<string>& str)
 	for (int i = 0; i < vct.body.size();i++) {
 		string tmp;
 		if (vct.body[i].type == Var) {
-			tmp += vct.body[i].name + "=" + vct.body[i].arg[0].str; //Создание переменной с её значением
-			str.push_back(tmp); //Добавление в вектор
+			tmp += vct.body[i].name + "=" + vct.body[i].arg[0].str; //РЎРѕР·РґР°РЅРёРµ РїРµСЂРµРјРµРЅРЅРѕР№ СЃ РµС‘ Р·РЅР°С‡РµРЅРёРµРј
+			str.push_back(tmp); //Р”РѕР±Р°РІР»РµРЅРёРµ РІ РІРµРєС‚РѕСЂ
 		}
 		if (vct.body[i].type == Func) {
 			string func_bgn = vct.body[i].arg[0].str; //CharRand();
@@ -475,22 +488,22 @@ void Compiler::glueCode(word vct, vector<string>& str)
 			str.push_back(tmp);
 			tmp = "";
 
-			//Если ургументов функии больше нуля
+			//Р•СЃР»Рё СѓСЂРіСѓРјРµРЅС‚РѕРІ С„СѓРЅРєРёРё Р±РѕР»СЊС€Рµ РЅСѓР»СЏ
 			if (vct.body[i].arg[1].body.size() > 0) {
 				
-				//Создание строки с именами переменных в аргрументе функции
+				//РЎРѕР·РґР°РЅРёРµ СЃС‚СЂРѕРєРё СЃ РёРјРµРЅР°РјРё РїРµСЂРµРјРµРЅРЅС‹С… РІ Р°СЂРіСЂСѓРјРµРЅС‚Рµ С„СѓРЅРєС†РёРё
 				for (int j = 0; j < vct.body[i].arg[1].body.size(); j++) {
-					tmp += vct.body[i].arg[1].body[j].name; //Запись переменной
+					tmp += vct.body[i].arg[1].body[j].name; //Р—Р°РїРёСЃСЊ РїРµСЂРµРјРµРЅРЅРѕР№
 
-					//Если не последняя переменная то добавляем запятую
+					//Р•СЃР»Рё РЅРµ РїРѕСЃР»РµРґРЅСЏСЏ РїРµСЂРµРјРµРЅРЅР°СЏ С‚Рѕ РґРѕР±Р°РІР»СЏРµРј Р·Р°РїСЏС‚СѓСЋ
 					if (!(j == vct.body[i].arg[1].body.size() - 1))tmp += ",";
 				}
 
-				tmp += "=GetArg()"; //Динамическое получение аргументов функции
-				str.push_back(tmp); //Добавление строки в вектор
+				tmp += "=GetArg()"; //Р”РёРЅР°РјРёС‡РµСЃРєРѕРµ РїРѕР»СѓС‡РµРЅРёРµ Р°СЂРіСѓРјРµРЅС‚РѕРІ С„СѓРЅРєС†РёРё
+				str.push_back(tmp); //Р”РѕР±Р°РІР»РµРЅРёРµ СЃС‚СЂРѕРєРё РІ РІРµРєС‚РѕСЂ
 			}
 
-			glueCode(vct.body[i].body[0], str); //Обработка тела функции
+			glueCode(vct.body[i].body[0], str); //РћР±СЂР°Р±РѕС‚РєР° С‚РµР»Р° С„СѓРЅРєС†РёРё
 
 			tmp = "ret()";
 			str.push_back(tmp);
@@ -520,48 +533,48 @@ void Compiler::glueCode(word vct, vector<string>& str)
 		}
 		if (vct.body[i].type == While) {
 			//cout << "===================" << endl;
-			string Whl_end = str::CharRand(); //Указатель линкера на конец цикла. Создание ранодомного набора символов
-			string Whl_bgn = str::CharRand(); //Указатель линкера на начало цикла. Создание ранодомного набора символов
+			string Whl_end = str::CharRand(); //РЈРєР°Р·Р°С‚РµР»СЊ Р»РёРЅРєРµСЂР° РЅР° РєРѕРЅРµС† С†РёРєР»Р°. РЎРѕР·РґР°РЅРёРµ СЂР°РЅРѕРґРѕРјРЅРѕРіРѕ РЅР°Р±РѕСЂР° СЃРёРјРІРѕР»РѕРІ
+			string Whl_bgn = str::CharRand(); //РЈРєР°Р·Р°С‚РµР»СЊ Р»РёРЅРєРµСЂР° РЅР° РЅР°С‡Р°Р»Рѕ С†РёРєР»Р°. РЎРѕР·РґР°РЅРёРµ СЂР°РЅРѕРґРѕРјРЅРѕРіРѕ РЅР°Р±РѕСЂР° СЃРёРјРІРѕР»РѕРІ
 
-			tmp = "$" + Whl_bgn + "$ "; //Установка метки начала цикла
-			str.push_back(tmp); //Добавление в вектор
+			tmp = "$" + Whl_bgn + "$ "; //РЈСЃС‚Р°РЅРѕРІРєР° РјРµС‚РєРё РЅР°С‡Р°Р»Р° С†РёРєР»Р°
+			str.push_back(tmp); //Р”РѕР±Р°РІР»РµРЅРёРµ РІ РІРµРєС‚РѕСЂ
 
-			// Условие при котором цикл будет выполняться и кокой код исполять
+			// РЈСЃР»РѕРІРёРµ РїСЂРё РєРѕС‚РѕСЂРѕРј С†РёРєР» Р±СѓРґРµС‚ РІС‹РїРѕР»РЅСЏС‚СЊСЃСЏ Рё РєРѕРєРѕР№ РєРѕРґ РёСЃРїРѕР»СЏС‚СЊ
 			tmp = "if " + vct.body[i].arg[0].str + " then else jmp(@" + Whl_end + "@) end"; 
-			str.push_back(tmp); //Добавление в вектор
+			str.push_back(tmp); //Р”РѕР±Р°РІР»РµРЅРёРµ РІ РІРµРєС‚РѕСЂ
 
-			glueCode(vct.body[i].body[0], str); //Запись тела цикла
+			glueCode(vct.body[i].body[0], str); //Р—Р°РїРёСЃСЊ С‚РµР»Р° С†РёРєР»Р°
 
-			tmp = "jmp(@" + Whl_bgn + "@)"; //Отправка указателя исполнения на начало цикла
-			str.push_back(tmp); //Добавление в вектор
+			tmp = "jmp(@" + Whl_bgn + "@)"; //РћС‚РїСЂР°РІРєР° СѓРєР°Р·Р°С‚РµР»СЏ РёСЃРїРѕР»РЅРµРЅРёСЏ РЅР° РЅР°С‡Р°Р»Рѕ С†РёРєР»Р°
+			str.push_back(tmp); //Р”РѕР±Р°РІР»РµРЅРёРµ РІ РІРµРєС‚РѕСЂ
 
-			tmp = "$" + Whl_end + "$"; //Установка метки окончания цикла
-			str.push_back(tmp); //Добавление в вектор
+			tmp = "$" + Whl_end + "$"; //РЈСЃС‚Р°РЅРѕРІРєР° РјРµС‚РєРё РѕРєРѕРЅС‡Р°РЅРёСЏ С†РёРєР»Р°
+			str.push_back(tmp); //Р”РѕР±Р°РІР»РµРЅРёРµ РІ РІРµРєС‚РѕСЂ
 		}
 		if (vct.body[i].type == Ret) {
-			tmp = "ret(" + vct.body[i].name + ")"; //Возврашение 
-			str.push_back(tmp); //Добавление в вектор
+			tmp = "ret(" + vct.body[i].name + ")"; //Р’РѕР·РІСЂР°С€РµРЅРёРµ 
+			str.push_back(tmp); //Р”РѕР±Р°РІР»РµРЅРёРµ РІ РІРµРєС‚РѕСЂ
 		}
 		if (vct.body[i].type == If) {
-			string if_end = str::CharRand(); //Указатель линкера на конец тела условия. Создание ранодомного набора символов
-			string else_end = str::CharRand(); //Указатель линкера на конец else условия. Создание ранодомного набора символов
+			string if_end = str::CharRand(); //РЈРєР°Р·Р°С‚РµР»СЊ Р»РёРЅРєРµСЂР° РЅР° РєРѕРЅРµС† С‚РµР»Р° СѓСЃР»РѕРІРёСЏ. РЎРѕР·РґР°РЅРёРµ СЂР°РЅРѕРґРѕРјРЅРѕРіРѕ РЅР°Р±РѕСЂР° СЃРёРјРІРѕР»РѕРІ
+			string else_end = str::CharRand(); //РЈРєР°Р·Р°С‚РµР»СЊ Р»РёРЅРєРµСЂР° РЅР° РєРѕРЅРµС† else СѓСЃР»РѕРІРёСЏ. РЎРѕР·РґР°РЅРёРµ СЂР°РЅРѕРґРѕРјРЅРѕРіРѕ РЅР°Р±РѕСЂР° СЃРёРјРІРѕР»РѕРІ
 
-			// Условие при котором код будет выполняться и кокой код исполять
+			// РЈСЃР»РѕРІРёРµ РїСЂРё РєРѕС‚РѕСЂРѕРј РєРѕРґ Р±СѓРґРµС‚ РІС‹РїРѕР»РЅСЏС‚СЊСЃСЏ Рё РєРѕРєРѕР№ РєРѕРґ РёСЃРїРѕР»СЏС‚СЊ
 			tmp = "if " + vct.body[i].arg[0].str + " then else jmp(@" + if_end + "@) end";
-			str.push_back(tmp); //Добавление в вектор
+			str.push_back(tmp); //Р”РѕР±Р°РІР»РµРЅРёРµ РІ РІРµРєС‚РѕСЂ
 
-			glueCode(vct.body[i].body[0], str); //Запись тела условия
+			glueCode(vct.body[i].body[0], str); //Р—Р°РїРёСЃСЊ С‚РµР»Р° СѓСЃР»РѕРІРёСЏ
 
 			tmp = "jmp(@" + else_end + "@)";
-			str.push_back(tmp); //Добавление в вектор
+			str.push_back(tmp); //Р”РѕР±Р°РІР»РµРЅРёРµ РІ РІРµРєС‚РѕСЂ
 
-			tmp = "$" + if_end + "$"; //Установка метки окончания условия
-			str.push_back(tmp); //Добавление в вектор
+			tmp = "$" + if_end + "$"; //РЈСЃС‚Р°РЅРѕРІРєР° РјРµС‚РєРё РѕРєРѕРЅС‡Р°РЅРёСЏ СѓСЃР»РѕРІРёСЏ
+			str.push_back(tmp); //Р”РѕР±Р°РІР»РµРЅРёРµ РІ РІРµРєС‚РѕСЂ
 
-			glueCode(vct.body[i].body[1], str); //Запись тела условия
+			glueCode(vct.body[i].body[1], str); //Р—Р°РїРёСЃСЊ С‚РµР»Р° СѓСЃР»РѕРІРёСЏ
 
-			tmp = "$" + else_end + "$"; //Установка метки окончания условия
-			str.push_back(tmp); //Добавление в вектор
+			tmp = "$" + else_end + "$"; //РЈСЃС‚Р°РЅРѕРІРєР° РјРµС‚РєРё РѕРєРѕРЅС‡Р°РЅРёСЏ СѓСЃР»РѕРІРёСЏ
+			str.push_back(tmp); //Р”РѕР±Р°РІР»РµРЅРёРµ РІ РІРµРєС‚РѕСЂ
 		}
 	}
 }

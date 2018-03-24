@@ -1,4 +1,4 @@
-#include "stdafx.h"
+п»ї#include "stdafx.h"
 #include "Linker.h"
 using namespace std;
 
@@ -48,10 +48,10 @@ void Linker::Apply(vector<string>& istr, vector<string>& ostr)
 		int size2 = istr[i].size();
 		bool Dog = false;
 		bool quotes = false;
-		string tmp_adr; //Сюда пишется имя ссылки
+		string tmp_adr; //РЎСЋРґР° РїРёС€РµС‚СЃСЏ РёРјСЏ СЃСЃС‹Р»РєРё
 		int adr;
 		for (int j = 0; j < size2; j++) {
-			if (istr[i][j] == '\"' || istr[i][j] == '\'')quotes = !quotes; //Если знак кавычки то инверстия их соостояния
+			if (istr[i][j] == '\"' || istr[i][j] == '\'')quotes = !quotes; //Р•СЃР»Рё Р·РЅР°Рє РєР°РІС‹С‡РєРё С‚Рѕ РёРЅРІРµСЂСЃС‚РёСЏ РёС… СЃРѕРѕСЃС‚РѕСЏРЅРёСЏ
 			if ((istr[i][j] == '@') && !quotes)
 				if (Dog) {
 					readAdr(istr[i], tmp_adr, tmp_pos, j);

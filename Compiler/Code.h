@@ -1,12 +1,12 @@
-#ifndef STR_H
+п»ї#ifndef STR_H
 #define STR_H
 #include <vector>
 using namespace std;
 typedef vector<string> code;
 
 namespace str {
-	extern string letters; // = { "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" }; //54 символа
-	extern string digits; // = { "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" }; //54 символа
+	extern string letters; // = { "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" }; //54 СЃРёРјРІРѕР»Р°
+	extern string digits; // = { "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" }; //54 СЃРёРјРІРѕР»Р°
 	bool onlySpace(string str);
 	string CharRand();
 	bool isChrBeStr(char str, string chr);
@@ -19,7 +19,7 @@ public:
 	string nextWord();
 	char nextSymbol(bool viewmode);
 	char nextChar(bool viewmode);
-	void isComment();
+	void skipComment(string endComm);
 private:
 	string filename;
 	code start;
@@ -27,6 +27,7 @@ private:
 	bool inComment = false;
 	int line, symbol;
 	bool returnWord(string word, int i, int j);
+	string cutStringComm(string str);
 	int sizeWoCom(string str);
 };
 

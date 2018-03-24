@@ -1,4 +1,4 @@
-#ifndef PRECPU_H
+п»ї#ifndef PRECPU_H
 #include <vector>
 #define PRECPU_H
 using namespace std;
@@ -9,23 +9,23 @@ namespace PreCPU {
 	extern vector<string> listDef_to;
 	extern int countDef;
 
-	//extern vector<string> listReq; //Лист с require
-	//extern vector<int> listReqPos; //лист позиций require
+	//extern vector<string> listReq; //Р›РёСЃС‚ СЃ require
+	//extern vector<int> listReqPos; //Р»РёСЃС‚ РїРѕР·РёС†РёР№ require
 
-	int GetCountDef(); //Возвращает размер вектора с def
-	void GetListDef(int id, string & from, string & to); //Возвращает значение по заданному id
+	int GetCountDef(); //Р’РѕР·РІСЂР°С‰Р°РµС‚ СЂР°Р·РјРµСЂ РІРµРєС‚РѕСЂР° СЃ def
+	void GetListDef(int id, string & from, string & to); //Р’РѕР·РІСЂР°С‰Р°РµС‚ Р·РЅР°С‡РµРЅРёРµ РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ id
 
 	string direct[];
 
 	void processCode(string & istr, code & ostr);
 
 	string delStrComment(string & ist);
-	void SpaceCut(string & istr, string & ostr); //Удаляет лишние пробелы
-	void delBlkComment(code & str, code & woCom); //Удаляет блочные коммментарии
-	void directPreCPU(code & istr, code & ostr); //Чтение и удаление директив препроцессора
+	void SpaceCut(string & istr, string & ostr); //РЈРґР°Р»СЏРµС‚ Р»РёС€РЅРёРµ РїСЂРѕР±РµР»С‹
+	void delBlkComment(code & str, code & woCom); //РЈРґР°Р»СЏРµС‚ Р±Р»РѕС‡РЅС‹Рµ РєРѕРјРјРјРµРЅС‚Р°СЂРёРё
+	void directPreCPU(code & istr, code & ostr); //Р§С‚РµРЅРёРµ Рё СѓРґР°Р»РµРЅРёРµ РґРёСЂРµРєС‚РёРІ РїСЂРµРїСЂРѕС†РµСЃСЃРѕСЂР°
 
-	void direct_def(code & str, int & id, int & dir_id); //Обработка директивы "def"
-	void direct_req(code & str, int & id, int & dir_id, code & ostr); //Обработка директивы "req"
+	void direct_def(code & str, int & id, int & dir_id); //РћР±СЂР°Р±РѕС‚РєР° РґРёСЂРµРєС‚РёРІС‹ "def"
+	void direct_req(code & str, int & id, int & dir_id, code & ostr); //РћР±СЂР°Р±РѕС‚РєР° РґРёСЂРµРєС‚РёРІС‹ "req"
 }
 
 #endif // PRECPU_H
