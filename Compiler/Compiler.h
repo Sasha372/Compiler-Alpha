@@ -28,9 +28,8 @@ namespace Compiler {
 	//================================//
 
 	void processCode(Code & TextCode); //Входная функция компилятора
-	void processBlock(Code & TextCode, word & vct, int parent); //Обработка блока кода
 
-	void spGlobal(Code & TextCode, word & vct, int parent); //Посик слов в блоке кода
+	void spGlobal(Code & TextCode, word & vct); //Поиск слов в блоке кода
 	bool readWordVar(string & istr, int & id, word & vct); //Чтение слова var
 	bool readWordFunc(string & istr, int & id, word & vct); //Чтение слова func
 	bool readWordWhile(string & istr, int & id, word & vct); //Чтение слова while

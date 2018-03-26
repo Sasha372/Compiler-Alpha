@@ -3,7 +3,6 @@
 using namespace std;
 
 namespace Compiler {
-	int listWordSize = 0;
 	struct word {
 		string name; //Имя функции, переменной
 		int type; //Тип слова
@@ -14,8 +13,7 @@ namespace Compiler {
 	};
 	word Global;
 	vector<word> listFunc;
-	vector<word> listVarGlob;
-	vector<word> listVarLocal;
+	vector<vector<word>> listVar;
 
 	string currFunc;
 }
@@ -30,27 +28,40 @@ void Compiler::processCode(Code & TextCode)
 
 	//==============================//
 
-	processBlock(TextCode, Global, Glob); //Запуск обработки кода и запись слов п вектор listWord
+	spGlobal(TextCode, Global); //Запуск обработки кода и запись слов п вектор listWord
 	//glueCode(Global, out);
 }
-void Compiler::processBlock(Code & TextCode, word & vct, int parent)
-{
-	spGlobal(TextCode, vct, parent); //Вызов поиска слов в строке istr  запись их в вектор vct
-	//unpackBlock(vct); //Обработка слов и запись их в вектор vct
-}
 
-void Compiler::spGlobal(Code & TextCode, word & vct, int parent)
+void Compiler::spGlobal(Code & TextCode, word & vct)
 {
-	for (int i = 0; i < 10; i++) {
+	//TextCode.one2two(10);
+
+	for (int i = 0; i < 5; i++) {
 		//cout << TextCode.nextSymbol(true) << endl;
+		string nWord;
 		switch (TextCode.nextSymbol(true))
 		{
+		case '@':{
+			TextCode.nextSymbol();
+			nWord = TextCode.nextWord();
+			if (nWord == "def") {
+				cout << "define " << TextCode.nextWord() << " -> ";
+				cout << TextCode.nextWord() << endl;
+			}
+			else if (nWord == "req") {
+				string sss = TextCode.nextWord();
+				cout << "include file " << sss << endl;
+				//Code New(TextCode.getPath() + sss, "//", "/*", "*/");
+				//spGlobal(New, vct, Glob);
+			}
+			else {
+				TextCode.error(nWord);
+			}
+			break; }
 		default:
 			string t = TextCode.nextWord();
-			cout << t << endl;
+			cout << "word: " << t << endl;
 		}
-		//char t = TextCode.nextSymbol(false);
-		//cout << t << endl;
 	}
 	/*if (tmp_wrd == "var") { readWordVar(istr, id, vct); tmp_wrd = ""; } //Если слово 
 	else if (tmp_wrd == "while") { readWordWhile(istr, id, vct); tmp_wrd = ""; }
@@ -105,10 +116,10 @@ bool Compiler::readWordVar(string & istr, int & id, word & vct)
 		word usr; //Слово для обработки присваивания значений
 		usr.type = Var; //Тип слова - переменная
 		usr.name = tmp.name; //Имен переменной
-		if (currFunc != "") //Если переменная объявлена в функции
-			listVarLocal.push_back(usr); //Добавлени в вектор локальных с пользовательскими переменныйми
-		else //Если в глобальном пространстве
-			listVarGlob.push_back(usr); //Добавлени в вектор глобальных с пользовательскими переменныйми
+		//if (currFunc != "") //Если переменная объявлена в функции
+			//listVarLocal.push_back(usr); //Добавлени в вектор локальных с пользовательскими переменныйми
+		//else //Если в глобальном пространстве
+			//listVarGlob.push_back(usr); //Добавлени в вектор глобальных с пользовательскими переменныйми
 
 		tmp.arg.push_back(arg); //Добавлени в конец вектора аргуменов слова значения переменной
 		vct.body.push_back(tmp); //Добавление к главному дереву слов
@@ -341,16 +352,16 @@ bool Compiler::EquallyVar(string name, string & istr, int & id, word & vct)
 	bool isUsr = false;
 	if (currFunc != "") {
 		name = currFunc + "." + name;
-		int sizeL = listVarLocal.size();
+		int sizeL = 0;// listVarLocal.size();
 		for (int i = 0; i < sizeL; i++) {
-			if (listVarLocal[i].name == name) isUsr = true;
+			//if (listVarLocal[i].name == name) isUsr = true;
 		}
 	}
 
 	if (!isUsr) {
-		int size = listVarGlob.size();
+		int size = 0; // listVarGlob.size();
 		for (int i = 0; i < size; i++) {
-			if (listVarGlob[i].name == name) isUsr = true;
+			//if (listVarGlob[i].name == name) isUsr = true;
 		}
 	}
 	if (!isUsr)return false;

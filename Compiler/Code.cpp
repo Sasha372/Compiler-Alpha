@@ -10,110 +10,136 @@ Code::Code(string file, string strCom, string beginCom, string endCom)
 		strComm = strCom;
 		beginComm = beginCom;
 		endComm = endCom;
+		symbol = 0;
 
-		cout << file << endl;
 		ifstream input(file);
 		string in;
 		code temp;
 		while (getline(input, in))
 		{
 			cutStringComm(in);
-			temp.push_back(in);
-			cout << in << endl;
+			temp.push_back(in + " ");
 		}
 		input.close();
-		line = 0;
-		symbol = 0;
-
 		isInit = true;
-		cout << "Initialization finised" << endl;
+		size_t s = file.rfind("\\");
+		path = file.substr(0, s) + "\\";
 
-		cutBlockComm(temp, start);
-		for (auto i = start.begin(); i != start.end(); i++)
-			cout << *i << endl;
+		code toOne;
+		cutBlockComm(temp, toOne);
+
+		for (auto i = toOne.begin(); i != toOne.end(); i++) {
+			before.push_back(start.size());
+			start += *i;
+		}
+
+		//cout << start << endl;
 	}
 }
 
 string Code::nextWord()
 {
 	string word;
-	for (int i = line; i < start.size(); i++) {
-		bool inQuotes = false;
-		//int size = sizeWoCom(start[i]);
-		for (int j = symbol; j < start[i].size(); j++) {
-			char crChar = start[i][j];
-			if (!inQuotes) {
-				if ((crChar == '"') || (crChar == '\'')) {
-					if (returnWord(word, i, j)) return word;
-					word += crChar;
-					inQuotes = true;
-				}
-				else if (str::isChrBeStr(crChar, str::letters + str::digits)) 
-					word += crChar;
-				else if (returnWord(word, i, j)) return word;
+	bool inQuotes = false;
+	for (int j = symbol; j < start.size(); j++) {
+		char crChar = start[j];
+		if (!inQuotes) {
+			if ((crChar == '"') || (crChar == '\'')) {
+				if (returnWord(word, j)) return word;
+				word += crChar;
+				inQuotes = true;
 			}
-			else {
-				if ((crChar == '"') || (crChar == '\'')) {
-					returnWord(word, i , j + 1);
-					return word + crChar;
-				}
-				else if (!str::isChrBeStr(crChar, "\n\r"))
-					word += crChar;
-				else if (returnWord(word, i, j)) {
-					//TODO: Ошибка не закрытой кавычки
-					return word;
-				}
-			}
+			else if (str::isChrBeStr(crChar, str::letters + str::digits)) 
+				word += crChar;
+			else if (returnWord(word, j)) return word;
 		}
-		symbol = 0;
-	}
-}
-
-char Code::nextSymbol(bool viewmode = false)
-{
-	for (int i = line; i < start.size(); i++) {
-		for (int j = symbol; j < start[i].size(); j++) {
-			if (!str::isChrBeStr(start[i][j], " \t\r\n")) { //9 - '	', 32 - ' '; "" + (char)13 + (char)10 + (char)32 + (char)9
-				if (!viewmode) {
-					cout << "NS: " << (int)start[i][j] << " : " << start[i][j] << endl;
-					line = i;
-					symbol = j + 1;
-				}
-				return start[i][j];
+		else {
+			if ((crChar == '"') || (crChar == '\'')) {
+				returnWord(word, j + 1);
+				return word + crChar;
+			}
+			else if (!str::isChrBeStr(crChar, "\n\r"))
+				word += crChar;
+			else if (returnWord(word, j)) {
+				//TODO: Ошибка не закрытой кавычки
+				return word;
 			}
 		}
 	}
 }
 
-char Code::nextChar(bool viewmode = false)
+char Code::nextSymbol(bool viewmode)
 {
-	for (int i = line; i < start.size(); i++)
-		for (int j = symbol; j < start[i].size(); j++)
-			if (!str::isChrBeStr(start[i][j], "\n\r")) {
-				if(!viewmode) {
-					line = i;
-					symbol = j + 1;
-				}
-				return start[i][j];
+	//cout << "L" << symbol << endl;
+	for (int j = symbol; j < start.size(); j++) {
+		if (!str::isChrBeStr(start[j], " \t\r\n")) {
+			if (!viewmode) {
+				//cout << "G" << j << endl;
+				symbol = j + 1;
 			}
+			return start[j];
+		}
+	}
+	//cout << "M" << symbol << endl;
 }
 
-void Code::skipComment(string endComm)
+char Code::nextChar(bool viewmode)
 {
-	for (int i = line; i < start.size(); i++) {
-		int end = (int)start[i].find(endComm);
-		if (end != string::npos) {
-			line = i;
-			symbol = end + endComm.size();
+	//cout << "L" << symbol << endl;
+	for (int j = symbol; j < start.size(); j++) {
+		if (!str::isChrBeStr(start[j], "\r\n")) {
+			if (!viewmode) {
+				//cout << "G" << j << endl;
+				symbol = j + 1;
+			}
+			return start[j];
+		}
+	}
+	//cout << "M" << symbol << endl;
+}
+
+dInt Code::one2two(int x)
+{
+	for (int i = 0; i < before.size() - 1; i++) {
+		if (before[i + 1] > x) {
+			if (before[i] <= x) {
+				return { i, x - before[i] };
+			}
 		}
 	}
 }
 
-bool Code::returnWord(string word, int i, int j)
+int Code::two2one(int x, int y)
+{
+	if ((x >= 0) && (x < before.size())) {
+		if (y < (before[x] - before[x - 1])) {
+			return before[x] + y;
+		}
+	}
+}
+
+string Code::getLine(int line)
+{
+	return string();
+}
+
+string Code::getPath()
+{
+	return path;
+}
+
+void Code::error(string s)
+{
+	error_t t { Err, "", 0, one2two(symbol).one, s };
+	cout << "Error " << t.id << " in line " << t.line<< " : " << s << endl;
+	errors.push_back(t);
+}
+
+bool Code::returnWord(string word, int j)
 {
 	if (!word.empty()) {
-		line = i;
-		symbol = j;
+		//line = i; //cout << "I: " << i;
+		symbol = j; //cout << "J: " << j << endl;
 		return true;
 	}
 	return false;
@@ -180,27 +206,6 @@ void Code::cutBlockComm(code & str, code & out)
 			if (inComm) out.push_back("");
 			else out.push_back(*i);
 			//cout << "2: " << *(out.end() - 1) << endl;
-		}
-	}
-}
-
-int Code::sizeWoCom(string str)
-{
-	int size = str.size();
-	if (!inComment) {
-		int open = str.find("/*");
-		if (open < size) {
-			if (str[open - 1] != '\\')size = open;
-			inComment = size;
-		}
-	}
-	else {
-		if (str.find("* /") < size) {
-			if (str[str.find("* /") - 1] != '\\')size = (int)str.find("* /");
-			if (size >= symbol) {
-				inComment = true;
-				return -1;
-			}
 		}
 	}
 }

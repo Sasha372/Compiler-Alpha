@@ -62,6 +62,13 @@ void Work(string inputFile, string preCPFile, string outputFile)
 		preCPout.close();
 	}*/
 
+	/*string tesst = TextCode.get();
+
+	for (auto i = tesst.begin(); i != tesst.end(); i++) {
+		cout << *i << " : " << (int)*i << endl;
+	}*/
+
+
 	Compiler::processCode(TextCode); //Обработка компиляторо
 	cout << "===============================================" << endl;
 	//cout << "WWW" << endl;

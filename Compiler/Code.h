@@ -1,28 +1,53 @@
 ﻿#ifndef CODE_H
 #define CODE_H
+
+#define Err 1
+
 #include <vector>
 using namespace std;
 typedef vector<string> code;
+
+struct dInt {
+	int one;
+	int two;
+};
+
+struct error_t {
+	int type; //Warring, error, critical error
+	string name;
+	int id;
+	int line;
+	string word;
+};
 
 class Code {
 public:
 	Code(string file, string strCom, string beginCom, string endCom);
 	string nextWord();
-	char nextSymbol(bool viewmode);
-	char nextChar(bool viewmode);
-	void skipComment(string endComm);
+	char nextSymbol(bool viewmode = false);
+	char nextChar(bool viewmode = false);
+
+	dInt one2two(int x);
+	int two2one(int x, int y);
+	string getLine(int line);
+	string getPath();
+
+	void error(string s);
 private:
 	string filename;
-	code start;
+	string path;
+
+	string start;
+	vector<int> before; //Begins of strings
+
 	bool isInit = false;
-	bool inComment = false;
 	int line, symbol;
 	string strComm, beginComm, endComm;
+	vector<error_t> errors;
 
-	bool returnWord(string word, int i, int j);
+	bool returnWord(string word, int j);
 	void cutStringComm(string & str);
 	void cutBlockComm(code & str, code & out);
-	int sizeWoCom(string str);
 };
 
 #endif // !CODE_H
