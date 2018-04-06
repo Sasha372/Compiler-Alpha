@@ -1,9 +1,10 @@
 ﻿#include "stdafx.h"
 #include <fstream>
 #include "Code.h"
+#include "str.h"
 using namespace std;
 
-Code::Code(string file, string strCom, string beginCom, string endCom)
+Code::Code(string file, string strCom, string beginCom, string endCom, bool ShowCode)
 {
 	if (!isInit) {
 		filename = file;
@@ -17,13 +18,14 @@ Code::Code(string file, string strCom, string beginCom, string endCom)
 		code temp;
 		while (getline(input, in))
 		{
-			cutStringComm(in);
-			temp.push_back(in + " ");
+			cutStringComm(in);	
+			temp.push_back(in + "\n");
 		}
 		input.close();
 		isInit = true;
 		size_t s = file.rfind("\\");
 		path = file.substr(0, s) + "\\";
+		cout << file << endl;
 
 		code toOne;
 		cutBlockComm(temp, toOne);
@@ -33,11 +35,15 @@ Code::Code(string file, string strCom, string beginCom, string endCom)
 			start += *i;
 		}
 
-		//cout << start << endl;
+		if (ShowCode) {
+			cout << "============" << endl;
+			cout << start << endl;
+			cout << "============" << endl;
+		}
 	}
 }
 
-string Code::nextWord()
+string Code::nextWord(bool viewmode)
 {
 	string word;
 	bool inQuotes = false;
@@ -45,22 +51,22 @@ string Code::nextWord()
 		char crChar = start[j];
 		if (!inQuotes) {
 			if ((crChar == '"') || (crChar == '\'')) {
-				if (returnWord(word, j)) return word;
+				if (returnWord(word, j, viewmode)) return word;
 				word += crChar;
 				inQuotes = true;
 			}
 			else if (str::isChrBeStr(crChar, str::letters + str::digits)) 
 				word += crChar;
-			else if (returnWord(word, j)) return word;
+			else if (returnWord(word, j, viewmode)) return word;
 		}
 		else {
 			if ((crChar == '"') || (crChar == '\'')) {
-				returnWord(word, j + 1);
+				returnWord(word, j + 1, viewmode);
 				return word + crChar;
 			}
 			else if (!str::isChrBeStr(crChar, "\n\r"))
 				word += crChar;
-			else if (returnWord(word, j)) {
+			else if (returnWord(word, j, viewmode)) {
 				//TODO: Ошибка не закрытой кавычки
 				return word;
 			}
@@ -70,17 +76,15 @@ string Code::nextWord()
 
 char Code::nextSymbol(bool viewmode)
 {
-	//cout << "L" << symbol << endl;
 	for (int j = symbol; j < start.size(); j++) {
 		if (!str::isChrBeStr(start[j], " \t\r\n")) {
 			if (!viewmode) {
-				//cout << "G" << j << endl;
 				symbol = j + 1;
 			}
 			return start[j];
 		}
 	}
-	//cout << "M" << symbol << endl;
+	return 0;
 }
 
 char Code::nextChar(bool viewmode)
@@ -128,18 +132,25 @@ string Code::getPath()
 	return path;
 }
 
-void Code::error(string s)
+bool Code::isEnd()
 {
-	error_t t { Err, "", 0, one2two(symbol).one, s };
-	cout << "Error " << t.id << " in line " << t.line<< " : " << s << endl;
+	char nS = nextSymbol(true);
+	if (symbol > start.size() + 1)return true;
+	if (str::isChrBeStr(nS, "" + '\0' + ' '))return true;
+	else return false;
+}
+
+void Code::error(int id,string s)
+{
+	error_t t { Err, "", id, one2two(symbol).one, s };
+	cout << "Error " << t.id << " in line " << t.line << " : " << s << " : " << one2two(symbol).two  << endl;
 	errors.push_back(t);
 }
 
-bool Code::returnWord(string word, int j)
+bool Code::returnWord(string word, int j, bool view)
 {
 	if (!word.empty()) {
-		//line = i; //cout << "I: " << i;
-		symbol = j; //cout << "J: " << j << endl;
+		if (!view)symbol = j; //view = false
 		return true;
 	}
 	return false;

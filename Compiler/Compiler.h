@@ -28,19 +28,20 @@ namespace Compiler {
 	//================================//
 
 	void processCode(Code & TextCode); //Входная функция компилятора
-
-	void spGlobal(Code & TextCode, word & vct); //Поиск слов в блоке кода
-	bool readWordVar(string & istr, int & id, word & vct); //Чтение слова var
-	bool readWordFunc(string & istr, int & id, word & vct); //Чтение слова func
-	bool readWordWhile(string & istr, int & id, word & vct); //Чтение слова while
-	bool readWordReturn(string & istr, int & id, word & vct); //Чтение слова return
-	bool readWordIf(string & istr, int & id, word & vct); //Чтение слова if
-	bool readWordDLL(string & istr, int & id, word & vct);
+	void spGlobal		(Code & TextCode, word & vct); //Поиск слов в блоке кода
+	void wordInGlobal	(Code & TextCode, vector<word> & vct);
+	void readWordVar	(Code & TextCode, vector<word> & vct); //Чтение слова var
+	void readWordFunc	(Code & TextCode, vector<word> & vct); //Чтение слова func
+	void readWordWhile	(Code & TextCode, vector<word> & vct); //Чтение слова while
+	void readWordReturn	(Code & TextCode, vector<word> & vct); //Чтение слова return
+	void readWordIf		(Code & TextCode, vector<word> & vct); //Чтение слова if
+	void readWordDLL	(Code & TextCode, vector<word> & vct);
 
 	//================================//
 
-	bool EquallyVar(string name, string & istr, int & id, word & vct); //Обработка присаивания переменной значения
-	bool CallFunc(string name, string & istr, int & id, word & vct); //Обработка вызова функции
+	int VarOrFunc	(Code & TextCode, word & vct, string n); //Обработка присаивания переменной значения
+	bool setValVar	(Code & TextCode, word & vct); //Обработка присаивания переменной значения
+	bool CallFunc	(Code & TextCode, word & vct); //Обработка вызова функции
 	
 	//================================//
 

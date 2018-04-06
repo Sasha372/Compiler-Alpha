@@ -22,8 +22,8 @@ struct error_t {
 
 class Code {
 public:
-	Code(string file, string strCom, string beginCom, string endCom);
-	string nextWord();
+	Code(string file, string strCom, string beginCom, string endCom, bool ShowCode = false);
+	string nextWord(bool viewmode = false);
 	char nextSymbol(bool viewmode = false);
 	char nextChar(bool viewmode = false);
 
@@ -31,8 +31,9 @@ public:
 	int two2one(int x, int y);
 	string getLine(int line);
 	string getPath();
+	bool isEnd();
 
-	void error(string s);
+	void error(int id, string s);
 private:
 	string filename;
 	string path;
@@ -45,7 +46,7 @@ private:
 	string strComm, beginComm, endComm;
 	vector<error_t> errors;
 
-	bool returnWord(string word, int j);
+	bool returnWord(string word, int j, bool view);
 	void cutStringComm(string & str);
 	void cutBlockComm(code & str, code & out);
 };
